@@ -1,0 +1,16 @@
+#Spell: On
+^ Intent: register an event handler for a given type, accumulating multiple handlers per type
+
+@On
+  : (type, handler) -> void
+  > @HandlerMap
+  ! idempotent_safe
+  ! appends_to_existing
+  ! creates_list_if_missing
+  ! allows_duplicate_handlers
+  ! wildcard_type_receives_all_events
+  - returns_unsubscribe_function
+  - deduplication
+  - max_listener_limit
+  ~ handler_is_callable
+  ~ type_is_string_or_symbol

@@ -1,0 +1,33 @@
+#Spell: Mitt
+^ Intent: minimal event emitter factory exposing subscribe, unsubscribe, and dispatch with wildcard support
+
+@Mitt
+  : all? -> Emitter
+  > @HandlerMap
+  > @On
+  > @Off
+  > @Emit
+  ! factory_function
+  ! returns_frozen_interface
+  ! exposes_internal_map
+  ! accepts_existing_map
+  ! ~200_bytes_minified
+  - class_based
+  - singleton
+  - namespace_pollution
+  - framework_coupling
+  - async_events
+  - once_method
+  - error_boundaries
+  ~ all_parameter_optional
+  ~ map_injected_or_created
+
+@Emitter
+  : interface
+  ! has_all_property
+  ! has_on_method
+  ! has_off_method  
+  ! has_emit_method
+  - has_once_method
+  - has_clear_method
+  - has_listeners_method

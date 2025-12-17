@@ -1,0 +1,15 @@
+#Spell: Off
+^ Intent: remove a specific handler or all handlers for a given event type
+
+@Off
+  : (type, handler?) -> void
+  > @HandlerMap
+  ! removes_by_reference_equality
+  ! clears_all_if_handler_omitted
+  ! no_op_if_not_found
+  ! safe_on_missing_type
+  - throws_on_missing
+  - returns_success_boolean
+  - auto_removes_empty_lists
+  ~ handler_is_same_reference
+  ~ type_exists_in_map

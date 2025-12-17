@@ -1,0 +1,12 @@
+#Spell: HandlerMap
+^ Intent: store event handlers indexed by event type with support for wildcard listeners
+
+@HandlerMap
+  : event_type -> handler_list
+  ! map_based
+  ! supports_wildcard_key
+  ! handlers_are_arrays
+  ! preserves_insertion_order
+  - weak_references
+  - auto_cleanup
+  ~ event_type_is_string_or_symbol

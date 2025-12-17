@@ -1,0 +1,19 @@
+#Spell: Emit
+^ Intent: invoke all registered handlers for a given event type, then wildcard handlers
+
+@Emit
+  : (type, event?) -> void
+  > @HandlerMap
+  > @On
+  ! invokes_type_handlers_first
+  ! invokes_wildcard_handlers_second
+  ! handlers_receive_event_payload
+  ! wildcard_handlers_receive_type_and_payload
+  ! iterates_snapshot_of_handlers
+  ! no_op_if_no_handlers
+  - supports_manual_wildcard_emit
+  - async_dispatch
+  - returns_handler_results
+  - catches_handler_errors
+  ~ handlers_are_synchronous
+  ~ event_payload_is_optional
