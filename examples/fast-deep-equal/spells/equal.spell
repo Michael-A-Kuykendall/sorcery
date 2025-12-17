@@ -1,0 +1,42 @@
+#Spell: FastDeepEqual
+^ Intent: recursively compare two values for structural equality, handling all JavaScript types correctly
+
+@Equal
+  : (a, b) -> boolean
+  ! same_reference_returns_true
+  ! both_must_be_same_type
+  ! constructor_must_match
+  ! primitives_compared_by_value
+  ! NaN_equals_NaN
+  ! positive_zero_equals_negative_zero
+  ! arrays_compared_by_index
+  ! arrays_must_match_length
+  ! objects_compared_by_keys
+  ! objects_must_match_key_count
+  ! key_order_does_not_matter
+  ! recursively_compares_nested
+  ! Date_compared_by_valueOf
+  ! RegExp_compared_by_source_and_flags
+  ! functions_compared_by_reference
+  ! null_only_equals_null
+  ! undefined_only_equals_undefined
+  ! objects_with_custom_valueOf_compared_by_valueOf
+  ! objects_with_custom_toString_compared_by_toString
+  - handles_circular_references
+  - handles_Map
+  - handles_Set
+  - handles_TypedArray
+  - handles_WeakMap
+  - handles_WeakRef
+  ~ no_circular_references_in_input
+
+@ES6Equal
+  : (a, b) -> boolean
+  > @Equal
+  ! handles_Map_by_size_and_entries
+  ! handles_Set_by_size_and_has
+  ! handles_TypedArray_by_constructor_and_elements
+  ! Map_entries_compared_recursively
+  ! Set_membership_checked_by_has
+  ! TypedArray_requires_same_constructor
+  - handles_circular_references

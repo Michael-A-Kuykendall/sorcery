@@ -38,10 +38,36 @@ example-name/
 
 ## Current Examples
 
-| Directory | Type | Description |
-|-----------|------|-------------|
-| [syntax/](syntax/) | Reference | Standalone spells demonstrating Glyph notation |
-| [mitt/](mitt/) | Case Study | Event emitter — 100% behavioral match |
+| Directory | Type | Description | Fidelity |
+|-----------|------|-------------|----------|
+| [syntax/](syntax/) | Reference | Standalone spells demonstrating Glyph notation | — |
+| [mitt/](mitt/) | Case Study | Event emitter | 100% |
+| [dlv/](dlv/) | Case Study | Deep object access | 100% |
+| [clsx/](clsx/) | Case Study | Classname builder | 100% |
+| [once/](once/) | Case Study | Call-once wrapper | ~95% |
+| [ms/](ms/) | Case Study | Time string parser | ~98% |
+| [fast-deep-equal/](fast-deep-equal/) | Case Study | Deep equality | ~95% |
+
+## Insights from Case Studies
+
+### What Spells Capture Well
+- Behavioral contracts (input → output)
+- Guarantees and invariants
+- Explicit exclusions
+- Composition and dependencies
+- Recursive behavior
+
+### Where Gaps Emerged
+- **Wrapper metadata** (function name/length preservation)
+- **Optional enhancements** (prototype extensions)
+- **Regex precision** (exact patterns vs. described behavior)
+- **Library variants** (React-specific, ES6 versions)
+- **Implicit language semantics** (Set.has uses ===)
+
+### Doctrine Refinements Suggested
+1. Standard guarantees for wrapper preservation
+2. A pattern for library variants
+3. Acknowledgment that spells assume language knowledge
 
 ## Adding Examples
 

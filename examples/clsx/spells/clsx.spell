@@ -1,0 +1,30 @@
+#Spell: Clsx
+^ Intent: build className strings from mixed inputs, filtering falsy values and expanding objects/arrays
+
+@Clsx
+  : (...args) -> string
+  > @ToVal
+  ! accepts_variadic_arguments
+  ! returns_space_separated_string
+  ! filters_falsy_values
+  ! strings_pass_through
+  ! numbers_pass_through
+  ! objects_include_truthy_keys
+  ! arrays_recurse_and_flatten
+  ! nested_arrays_supported
+  ! empty_input_returns_empty_string
+  - includes_falsy_keys_from_objects
+  - includes_null_or_undefined
+  - throws_on_invalid_input
+  - trims_output
+  ~ all_inputs_are_string_number_object_array_or_falsy
+
+@ToVal
+  : (mixed) -> string
+  ! handles_string
+  ! handles_number
+  ! handles_array_recursively
+  ! handles_object_by_truthy_keys
+  ! returns_empty_for_falsy
+  - handles_functions
+  - handles_symbols

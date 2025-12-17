@@ -1,0 +1,70 @@
+#Spell: Ms
+^ Intent: bidirectional conversion between millisecond numbers and human-readable time strings
+
+@Ms
+  : (value, options?) -> number | string
+  > @Parse
+  > @Format
+  ! string_input_returns_number
+  ! number_input_returns_string
+  ! throws_on_invalid_type
+  - returns_null_on_invalid
+  - async
+  ~ value_is_string_or_number
+
+@Parse
+  : (str) -> number
+  ! regex_based_parsing
+  ! supports_years_yrs_yr_y
+  ! supports_months_month_mo
+  ! supports_weeks_week_w
+  ! supports_days_day_d
+  ! supports_hours_hrs_hr_h
+  ! supports_minutes_mins_min_m
+  ! supports_seconds_secs_sec_s
+  ! supports_milliseconds_msecs_msec_ms
+  ! case_insensitive
+  ! allows_decimal_values
+  ! allows_negative_values
+  ! allows_space_between_number_and_unit
+  ! no_unit_defaults_to_milliseconds
+  ! returns_NaN_for_unparseable
+  ! throws_on_empty_string
+  ! throws_on_string_over_100_chars
+  - supports_compound_expressions
+  ~ str_matches_number_unit_pattern
+
+@Format
+  : (ms, options?) -> string
+  > @FmtShort
+  > @FmtLong
+  ! options_long_selects_verbose_format
+  ! default_is_short_format
+  ! throws_on_non_finite_number
+  ~ ms_is_finite_number
+
+@FmtShort
+  : (ms) -> string
+  ! returns_largest_fitting_unit
+  ! rounds_to_integer
+  ! uses_abbreviated_units
+  ! unit_hierarchy_y_mo_w_d_h_m_s_ms
+  ! uses_absolute_value_for_comparison
+
+@FmtLong
+  : (ms) -> string
+  ! returns_largest_fitting_unit
+  ! rounds_to_integer
+  ! uses_full_unit_names
+  ! pluralizes_when_value_gte_1_5
+  ! unit_hierarchy_y_mo_w_d_h_m_s_ms
+
+@TimeConstants
+  : unit multipliers
+  ! second_1000
+  ! minute_60_seconds
+  ! hour_60_minutes
+  ! day_24_hours
+  ! week_7_days
+  ! year_365_25_days
+  ! month_year_div_12
