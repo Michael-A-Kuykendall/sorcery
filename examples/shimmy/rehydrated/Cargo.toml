@@ -1,0 +1,75 @@
+[package]
+name = "shimmy-rehydrated"
+version = "0.1.0"
+edition = "2021"
+description = "Lightweight OpenAI API-compatible inference server (rehydrated from Sorcery spells)"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# REHYDRATION MANIFEST
+# ══════════════════════════════════════════════════════════════════════════════
+# This crate was reconstructed from Sorcery Doctrine spell files.
+# Original source code was NOT consulted during reconstruction.
+#
+# Dependencies inferred from ~ assumptions in spell files:
+# ~ rust_semantics       -> standard Rust patterns
+# ~ async_trait_pattern  -> async-trait crate
+# ~ tokio_runtime        -> tokio with "full" features
+# ~ axum_framework       -> axum with ws support
+# ~ clap_derive_macros   -> clap with derive feature
+# ~ serde_json           -> serde + serde_json
+# ~ hashmap_storage      -> std::collections::HashMap
+# ~ pathbuf_paths        -> std::path::PathBuf
+# ══════════════════════════════════════════════════════════════════════════════
+
+[lib]
+name = "shimmy_rehydrated"
+path = "src/lib.rs"
+
+[[bin]]
+name = "shimmy"
+path = "src/main.rs"
+
+[dependencies]
+# HTTP Framework (~ axum_framework)
+axum = { version = "0.7", features = ["ws"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors"] }
+
+# Async Runtime (~ tokio_runtime)
+tokio = { version = "1", features = ["full"] }
+tokio-stream = "0.1"
+
+# Serialization (~ serde_json)
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# CLI Parsing (~ clap_derive_macros)
+clap = { version = "4", features = ["derive"] }
+
+# Async Traits (~ async_trait_pattern)
+async-trait = "0.1"
+
+# SSE Streaming
+futures = "0.3"
+async-stream = "0.3"
+
+# Utilities
+uuid = { version = "1", features = ["v4"] }
+chrono = "0.4"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+anyhow = "1"
+
+# System info for discovery
+sys-info = "0.9"
+walkdir = "2"
+
+[features]
+default = []
+llama = []
+llama-cuda = ["llama"]
+llama-vulkan = ["llama"]
+llama-opencl = ["llama"]
+huggingface = []
+mlx = []
+gpu = ["llama-cuda", "llama-vulkan", "llama-opencl"]

@@ -1,0 +1,81 @@
+# ════════════════════════════════════════════════════════════
+# cli.spell - Command Line Interface Module
+# ════════════════════════════════════════════════════════════
+# Shimmy: The 4.8MB OpenAI API Server
+# ════════════════════════════════════════════════════════════
+
+~ rust_semantics
+~ clap_derive_macros
+~ subcommand_pattern
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Top-Level CLI Structure
+# ─────────────────────────────────────────────────────────────
+# The CLI uses clap's derive macros for ergonomic argument parsing.
+# Global flags apply to all subcommands.
+
+@Cli
+  ^ Parser
+  # name = "shimmy"
+  # version = env!("CARGO_PKG_VERSION")
+  # about = "single-binary GGUF + LoRA server"
+  
+  #cmd -> @Command
+  
+  #model_dirs -> ?String               # --model-dirs, semicolon-separated paths
+  #gpu_backend -> ?String              # --gpu-backend: auto|cpu|cuda|vulkan|opencl
+  #cpu_moe -> bool                     # --cpu-moe: offload ALL MoE experts to CPU
+  #n_cpu_moe -> ?usize                 # --n-cpu-moe N: offload first N layers (conflicts with cpu_moe)
+  
+  ! conflicts_with(cpu_moe, n_cpu_moe)
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Command Subcommands
+# ─────────────────────────────────────────────────────────────
+# Each variant becomes a subcommand with its own arguments.
+
+@Command
+  ^ Subcommand
+
+  :Serve
+    #bind -> String                    # default = "auto" (auto port allocation)
+    #model_path -> ?String             # bypass discovery, use specific file
+    
+  :List
+    #short -> bool                     # -s/--short: output model names only
+
+  :Discover
+    #llm_only -> bool                  # --llm-only: filter non-LLM models (CLIP, SDXL, etc.)
+    
+  :Probe
+    #name -> String                    # model name to test loading
+    
+  :Bench
+    #name -> String                    # model name to benchmark
+    #max_tokens -> usize               # default = 64
+    
+  :Generate
+    #name -> String                    # model name
+    #prompt -> String                  # --prompt: input text
+    #max_tokens -> usize               # default = 64
+    
+  :GpuInfo                             # show GPU backend status and capabilities
+  
+  :Init
+    #template -> String                # docker|kubernetes|railway|fly|fastapi|express
+    #output -> String                  # default = "."
+    #name -> ?String                   # project name for customization
+
+# ─────────────────────────────────────────────────────────────
+# INVOCATION FLOW
+# ─────────────────────────────────────────────────────────────
+# main() -> Cli::parse() -> match cli.cmd { ... }
+#
+# Serve: initialize registry with discovery, auto-register, run server
+# List: short mode emits names only (for scripts), verbose shows details
+# Discover: refresh discovery, apply llm_only filter if set
+# Probe: load model once, report success/failure
+# Bench: load model, generate with timing, report throughput
+# Generate: one-off generation, non-streaming
+# GpuInfo: report llama.cpp backend, available GPUs
+# Init: generate deployment templates

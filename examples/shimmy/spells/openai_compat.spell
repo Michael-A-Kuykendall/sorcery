@@ -1,0 +1,188 @@
+# ════════════════════════════════════════════════════════════
+# openai_compat.spell - OpenAI API Compatibility Layer
+# ════════════════════════════════════════════════════════════
+# Shimmy: The 4.8MB OpenAI API Server
+# ════════════════════════════════════════════════════════════
+
+~ rust_semantics
+~ openai_api_spec
+~ sse_streaming
+~ drop_in_replacement
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Chat Completion Request
+# ─────────────────────────────────────────────────────────────
+# OpenAI-compatible request format for /v1/chat/completions
+
+@ChatCompletionRequest
+  ^ Deserialize
+
+  #model -> String                     # required
+  #messages -> Vec<@ChatMessage>       # required
+  #stream -> ?bool                     # default false
+  #temperature -> ?f32                 # [0.0, 2.0]
+  #max_tokens -> ?usize
+  #top_p -> ?f32                       # nucleus sampling
+  #stop -> ?@StopTokens                # string or array
+
+@StopTokens
+  ^ Deserialize
+  
+  :Single(String)
+  :Multiple(Vec<String>)
+  
+  :into_vec() -> Vec<String>
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Chat Completion Response
+# ─────────────────────────────────────────────────────────────
+# Non-streaming response format.
+
+@ChatCompletionResponse
+  ^ Serialize
+
+  #id -> String                        # "chatcmpl-{uuid}"
+  #object -> String                    # "chat.completion"
+  #created -> u64                      # unix timestamp
+  #model -> String
+  #choices -> Vec<@Choice>
+  #usage -> @Usage
+
+@Choice
+  ^ Serialize
+
+  #index -> usize
+  #message -> @ChatMessage
+  #finish_reason -> ?String            # "stop" | "length"
+
+@Usage
+  ^ Serialize
+
+  #prompt_tokens -> usize
+  #completion_tokens -> usize
+  #total_tokens -> usize
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Streaming Chunks
+# ─────────────────────────────────────────────────────────────
+# SSE format for streaming responses.
+
+@ChatCompletionChunk
+  ^ Serialize
+
+  #id -> String                        # same id throughout stream
+  #object -> String                    # "chat.completion.chunk"
+  #created -> u64
+  #model -> String
+  #choices -> Vec<@ChunkChoice>
+
+@ChunkChoice
+  ^ Serialize
+
+  #index -> usize
+  #delta -> @Delta
+  #finish_reason -> ?String
+
+@Delta
+  ^ Serialize
+
+  #role -> ?String                     # only in first chunk
+  #content -> ?String                  # token content
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Models List Response
+# ─────────────────────────────────────────────────────────────
+
+@ModelsResponse
+  ^ Serialize
+
+  #object -> String                    # "list"
+  #data -> Vec<@ListModel>
+
+@ListModel
+  ^ Serialize
+
+  #id -> String                        # model name
+  #object -> String                    # "model"
+  #created -> u64
+  #owned_by -> String                  # "shimmy"
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Chat Completions Handler
+# ─────────────────────────────────────────────────────────────
+
+:chat_completions(State(state), Json(req)) -> impl IntoResponse
+  # 1. lookup model via registry.to_spec(req.model)
+  #    - if not found: 404 with OpenAI error format:
+  #      { "error": { "message": "...", "type": "invalid_request_error", "code": "model_not_found" } }
+  #
+  # 2. load model via engine.load(spec)
+  #    - if fails: 502 BAD_GATEWAY
+  #
+  # 3. auto-detect template from model name:
+  #    - "qwen" | "chatglm" -> ChatML
+  #    - "llama" -> Llama3
+  #    - default -> OpenChat
+  #
+  # 4. render prompt using template family
+  #
+  # 5. build GenOptions from request
+  #    - merge stop_tokens with template defaults
+  #
+  # 6. if req.stream == true:
+  #    STREAMING RESPONSE (SSE):
+  #    a. create unbounded channel
+  #    b. spawn generation task with token callback
+  #    c. send initial chunk: { delta: { role: "assistant" } }
+  #    d. for each token: send chunk with content
+  #    e. send final chunk: { finish_reason: "stop" }
+  #    f. send "[DONE]"
+  #    g. return Sse stream
+  #
+  # 7. else:
+  #    NON-STREAMING RESPONSE:
+  #    a. await generate(prompt, opts, None)
+  #    b. wrap in ChatCompletionResponse
+  #    c. return JSON
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Models List Handler
+# ─────────────────────────────────────────────────────────────
+
+:models(State(state)) -> impl IntoResponse
+  # returns ModelsResponse with all available models:
+  # {
+  #   "object": "list",
+  #   "data": [
+  #     { "id": "model-name", "object": "model", "created": N, "owned_by": "shimmy" },
+  #     ...
+  #   ]
+  # }
+
+# ─────────────────────────────────────────────────────────────
+# STREAMING FORMAT (SSE)
+# ─────────────────────────────────────────────────────────────
+#
+# data: {"id":"chatcmpl-xxx","object":"chat.completion.chunk","choices":[{"delta":{"role":"assistant"}}]}
+#
+# data: {"id":"chatcmpl-xxx","object":"chat.completion.chunk","choices":[{"delta":{"content":"Hello"}}]}
+#
+# data: {"id":"chatcmpl-xxx","object":"chat.completion.chunk","choices":[{"delta":{"content":" world"}}]}
+#
+# data: {"id":"chatcmpl-xxx","object":"chat.completion.chunk","choices":[{"finish_reason":"stop"}]}
+#
+# data: [DONE]
+
+# ─────────────────────────────────────────────────────────────
+# DROP-IN COMPATIBILITY
+# ─────────────────────────────────────────────────────────────
+#
+# Compatible with:
+#   - OpenAI Python SDK: openai.OpenAI(base_url="http://localhost:11435/v1")
+#   - OpenAI Node SDK: new OpenAI({ baseURL: "http://localhost:11435/v1" })
+#   - Open WebUI
+#   - AnythingLLM
+#   - Continue.dev
+#   - Cursor
+#
+# API key ignored (sk-local placeholder accepted)

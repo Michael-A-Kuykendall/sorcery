@@ -21,6 +21,8 @@
 
 > **Note:** Sorcery is a *design doctrine* for architecture handoff—not a framework, language, or product. It is a way of encoding intent so it survives transmission.
 
+> **Also:** Sorcery is not code stenography or a byte-for-byte recorder; it’s a creation/handoff tool that preserves intent, contracts, and constraints—implementation details may differ.
+
 ---
 
 ## ⚡ The Problem
@@ -49,6 +51,13 @@ Then you hand it off—and watch it dissolve:
 Think of it as enchanting your architecture so it can be wielded by anyone.
 
 **The core idea:** *Sorcery casts high-context intent into constrained spells so lower-context agents can act correctly without shared memory.*
+
+### A Note on Context Asymmetry
+
+Sorcery is intentionally **downward-facing**: casting spells is a high-context planning task; invocation is a low-context execution task.
+
+In practice, most failures show up when spells don’t explicitly seal “exact sets” (commands, routes, exports), and invokers are forced to improvise.
+See `examples/LESSONS_CONTEXT_ASYMMETRY.md`.
 
 ---
 
@@ -226,6 +235,106 @@ Artifacts       over  Memory
 ```
 
 **The canonical rule:** *Write spells that declare exactly what must happen and what must never happen—so any agent can invoke them without guessing.*
+
+---
+
+## 🔮 The Grammar is Complete
+
+Nine symbols. No more needed.
+
+Every architectural concept—wrapper metadata, optional behaviors, library variants, language semantics, regex precision—maps to existing glyphs. The temptation to add new symbols is a sign you haven't found the right incantation yet.
+
+### ◆ Symbols vs. Vocabulary
+
+```
+Symbols      = Grammar   (fixed, nine total)
+Values       = Vocabulary (infinite, domain-specific)
+Incantations = Sentences  (grammar + vocabulary combined)
+```
+
+English doesn't add new grammar to express new ideas. It combines existing grammar with new vocabulary. Sorcery works the same way.
+
+### ◆ The Incantation Table
+
+| Concept | Symbol | Example |
+|---------|--------|---------|
+| Wrapper preserves function name | `!` | `! preserves_function_name` |
+| Wrapper preserves arity | `!` | `! preserves_function_length` |
+| Optional enhancement | `@` | Separate `@Extension` component |
+| Feature explicitly excluded | `-` | `- auto_installed` |
+| Library variant | `>` | `@ES6Equal > @Equal` |
+| Regex allows decimals | `!` | `! allows_decimal_values` |
+| Relies on language semantics | `~` | `~ set_uses_reference_equality` |
+| Runtime behavior assumed | `~` | `~ objects_are_plain` |
+
+### ◆ Incantation Patterns
+
+**Preserving identity through wrappers:**
+```glyph
+@Wrapper
+  ! preserves_function_name
+  ! preserves_function_length
+  - exposes_internal_state
+```
+
+**Separating core from optional:**
+```glyph
+@Core
+  : fn -> wrapped_fn
+  ! executes_once
+
+@Extension
+  > @Core
+  ! adds_prototype_method
+  - auto_installed
+```
+
+**Expressing variants:**
+```glyph
+@Equal
+  : (a, b) -> boolean
+  ! handles_objects
+  - handles_Map
+
+@ES6Equal
+  > @Equal
+  ! handles_Map
+  ! handles_Set
+```
+
+**Declaring runtime assumptions:**
+```glyph
+@SetCompare
+  : (a, b) -> boolean
+  ~ set_has_uses_reference_equality
+  ~ objects_not_deep_compared_inside_sets
+```
+
+### ◆ Finding the Right Incantation
+
+When a concept seems inexpressible, ask:
+
+| Question | Symbol |
+|----------|--------|
+| Must this always hold? | `!` guarantee |
+| Must this never happen? | `-` exclusion |
+| Do we rely on this being true? | `~` assumption |
+| Is this a distinct piece? | `@` component |
+| Does this extend something else? | `>` dependency |
+
+One of these fits. Always.
+
+### ◆ The Reframe
+
+When stuck:
+
+> ✗ "Sorcery cannot express X"
+
+Becomes:
+
+> ✓ "What combination of `#^@:!~->?` encodes X?"
+
+The answer exists. The grammar is closed. The vocabulary is yours.
 
 ---
 

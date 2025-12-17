@@ -1,0 +1,135 @@
+# ════════════════════════════════════════════════════════════
+# model_registry.spell - Model Registration & Discovery Hub
+# ════════════════════════════════════════════════════════════
+# Shimmy: The 4.8MB OpenAI API Server
+# ════════════════════════════════════════════════════════════
+
+~ rust_semantics
+~ hashmap_storage
+~ pathbuf_paths
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Model Entry (Manual Registration)
+# ─────────────────────────────────────────────────────────────
+# A manually registered model with explicit configuration.
+# These take priority over auto-discovered models.
+
+@ModelEntry
+  #name -> String                      # unique identifier / alias
+  #base_path -> PathBuf                # path to .gguf file
+  #lora_path -> ?PathBuf               # optional LoRA adapter
+  #template -> ?String                 # "chatml" | "llama3" | auto-detect
+  #ctx_len -> ?usize                   # context window override
+  #n_threads -> ?i32                   # inference thread count
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Model Spec (Engine Input)
+# ─────────────────────────────────────────────────────────────
+# The specification passed to InferenceEngine::load()
+
+@ModelSpec
+  #name -> String
+  #base_path -> PathBuf
+  #lora_path -> ?PathBuf
+  #template -> ?String
+  #ctx_len -> ?usize
+  #n_threads -> ?i32
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Registry (Dual-Source Model Hub)
+# ─────────────────────────────────────────────────────────────
+# The registry maintains two sources:
+#   1. inner: manually registered models (priority)
+#   2. discovered_models: auto-discovered from filesystem
+
+@Registry
+  ^ Default
+
+  #inner -> HashMap<String, @ModelEntry>
+  #discovered_models -> HashMap<String, @DiscoveredModel>
+
+  # ───────────────────────────────────────────────────────────
+  # Constructor Functions
+  # ───────────────────────────────────────────────────────────
+  
+  :new() -> Self
+    ! inner starts empty
+    ! discovered_models starts empty
+  
+  :with_discovery() -> Self
+    ! creates ModelAutoDiscovery
+    ! populates discovered_models from scan
+    
+  :default() -> Self
+    # alias for new()
+    
+  # ───────────────────────────────────────────────────────────
+  # Registration
+  # ───────────────────────────────────────────────────────────
+  
+  :register(entry: @ModelEntry)
+    # inserts into inner hashmap
+    # overwrites existing entry with same name
+    
+  :auto_register_discovered()
+    # promotes all discovered_models to inner
+    # uses infer_template() for each
+    # skipped if already in inner (manual takes priority)
+
+  # ───────────────────────────────────────────────────────────
+  # Lookup
+  # ───────────────────────────────────────────────────────────
+  
+  :get(name: &str) -> ?&@ModelEntry
+    # checks inner HashMap only
+    
+  :to_spec(name: &str) -> ?@ModelSpec
+    # first checks inner (manual)
+    # then checks discovered_models
+    # converts to ModelSpec for engine
+    ! manual entries take priority over discovered
+
+  # ───────────────────────────────────────────────────────────
+  # Listing
+  # ───────────────────────────────────────────────────────────
+  
+  :list() -> Vec<&@ModelEntry>
+    # returns manually registered models only
+    
+  :list_all_available() -> Vec<String>
+    # combines inner.keys() + discovered_models.keys()
+    # deduplicates
+    # sorted for consistent output
+    
+  # ───────────────────────────────────────────────────────────
+  # Template Inference
+  # ───────────────────────────────────────────────────────────
+  
+  :infer_template(name: &str) -> ?String
+    # pattern matching on model name:
+    #   "qwen" | "chatglm" -> "chatml"
+    #   "llama" | "llama-3" -> "llama3"
+    #   "phi" -> "chatml"
+    #   _ -> None (use default)
+    
+  :refresh_discovered_models()
+    # re-runs auto-discovery scan
+    # updates discovered_models HashMap
+
+# ─────────────────────────────────────────────────────────────
+# DUAL-SOURCE ARCHITECTURE
+# ─────────────────────────────────────────────────────────────
+#
+# ┌─────────────────────────────────────────────────────────┐
+# │                      Registry                          │
+# ├────────────────────────┬────────────────────────────────┤
+# │  inner (manual)        │  discovered_models (auto)     │
+# │  ─────────────────     │  ─────────────────────────    │
+# │  HashMap<String,       │  HashMap<String,              │
+# │    ModelEntry>         │    DiscoveredModel>           │
+# │                        │                               │
+# │  PRIORITY: HIGH        │  PRIORITY: LOW                │
+# │  Source: explicit      │  Source: filesystem scan      │
+# └────────────────────────┴────────────────────────────────┘
+#
+# to_spec() checks inner first, then discovered_models

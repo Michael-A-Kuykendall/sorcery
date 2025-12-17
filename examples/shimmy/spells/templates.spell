@@ -1,0 +1,119 @@
+# ════════════════════════════════════════════════════════════
+# templates.spell - Prompt Template Formatting
+# ════════════════════════════════════════════════════════════
+# Shimmy: The 4.8MB OpenAI API Server
+# ════════════════════════════════════════════════════════════
+
+~ rust_semantics
+~ chat_template_standards
+~ string_formatting
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Template Family
+# ─────────────────────────────────────────────────────────────
+# Represents different prompt formatting standards.
+
+@TemplateFamily
+  :ChatML                              # Qwen, ChatGLM, Phi
+  :Llama3                              # Meta Llama 3 family
+  :OpenChat                            # OpenChat, generic fallback
+  :Mistral                             # Mistral/Mixtral models
+
+  :render(system: ?&str, history: &[(String, String)], user_input: ?&str) -> String
+    # formats conversation into model-specific prompt
+
+  :stop_tokens() -> Vec<String>
+    # returns default stop sequences for this template
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: ChatML Format
+# ─────────────────────────────────────────────────────────────
+# Used by Qwen, ChatGLM, Phi-3, and many others.
+
+# @TemplateFamily::ChatML
+
+:render_chatml(system, history, user_input) -> String
+  # <|im_start|>system
+  # {system}
+  # <|im_end|>
+  # <|im_start|>user
+  # {user_message}
+  # <|im_end|>
+  # <|im_start|>assistant
+  # {assistant_message}
+  # <|im_end|>
+  # ...
+  # <|im_start|>user
+  # {user_input}
+  # <|im_end|>
+  # <|im_start|>assistant
+  
+:stop_tokens_chatml() -> Vec<String>
+  # ["<|im_end|>", "<|im_start|>"]
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Llama 3 Format
+# ─────────────────────────────────────────────────────────────
+# Meta's Llama 3 instruction format.
+
+# @TemplateFamily::Llama3
+
+:render_llama3(system, history, user_input) -> String
+  # <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+  # 
+  # {system}<|eot_id|><|start_header_id|>user<|end_header_id|>
+  # 
+  # {user_message}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+  # 
+  # {assistant_message}<|eot_id|>
+  # ...
+  # <|start_header_id|>user<|end_header_id|>
+  # 
+  # {user_input}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+  
+:stop_tokens_llama3() -> Vec<String>
+  # ["<|eot_id|>", "<|end_of_text|>"]
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: OpenChat Format
+# ─────────────────────────────────────────────────────────────
+# Generic fallback format.
+
+# @TemplateFamily::OpenChat
+
+:render_openchat(system, history, user_input) -> String
+  # GPT4 Correct System: {system}<|end_of_turn|>
+  # GPT4 Correct User: {user_message}<|end_of_turn|>
+  # GPT4 Correct Assistant: {assistant_message}<|end_of_turn|>
+  # ...
+  # GPT4 Correct User: {user_input}<|end_of_turn|>
+  # GPT4 Correct Assistant:
+  
+:stop_tokens_openchat() -> Vec<String>
+  # ["<|end_of_turn|>"]
+
+# ─────────────────────────────────────────────────────────────
+# AUTO-DETECTION
+# ─────────────────────────────────────────────────────────────
+#
+# :detect_template_family(model_name: &str) -> @TemplateFamily
+#
+#   if name contains "qwen" | "chatglm" | "phi" -> ChatML
+#   if name contains "llama-3" | "llama3" -> Llama3
+#   if name contains "mistral" | "mixtral" -> Mistral
+#   else -> OpenChat (generic fallback)
+#
+# Used when ModelEntry.template is None
+
+# ─────────────────────────────────────────────────────────────
+# TEMPLATE SELECTION IN OPENAI COMPAT
+# ─────────────────────────────────────────────────────────────
+#
+# let fam = match spec.template.as_deref() {
+#     Some("chatml") => TemplateFamily::ChatML,
+#     Some("llama3") | Some("llama-3") => TemplateFamily::Llama3,
+#     _ => detect_template_family(&req.model)
+# };
+#
+# let prompt = fam.render(system, &history, last_user);
+# opts.stop_tokens = fam.stop_tokens();

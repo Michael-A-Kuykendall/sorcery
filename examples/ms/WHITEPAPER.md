@@ -1,5 +1,7 @@
 # Sorcery Case Study: ms
 
+**Authorship note:** This rehydration + analysis was produced by **Opus Claude 4.5**.
+
 ## Abstract
 
 Dehydrated [ms](https://github.com/vercel/ms) (~200 lines) into Sorcery spells, then rehydrated without referencing the original.

@@ -1,0 +1,141 @@
+# ════════════════════════════════════════════════════════════
+# api.spell - Native Shimmy API Handlers
+# ════════════════════════════════════════════════════════════
+# Shimmy: The 4.8MB OpenAI API Server
+# ════════════════════════════════════════════════════════════
+
+~ rust_semantics
+~ axum_extractors
+~ serde_json
+~ websocket_streaming
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Generate Request
+# ─────────────────────────────────────────────────────────────
+# Request body for /api/generate endpoint.
+
+@GenerateRequest
+  ^ Deserialize
+
+  #model -> String                     # model name/alias
+  #prompt -> ?String                   # raw prompt text
+  #messages -> ?Vec<@ChatMessage>      # chat format (alternative to prompt)
+  #system -> ?String                   # system prompt
+  #max_tokens -> ?usize
+  #temperature -> ?f32
+  #top_p -> ?f32
+  #top_k -> ?i32
+  #stream -> ?bool                     # default false
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Chat Message
+# ─────────────────────────────────────────────────────────────
+# Message format for chat-style requests.
+
+@ChatMessage
+  ^ Serialize, Deserialize
+
+  #role -> String                      # "system" | "user" | "assistant"
+  #content -> String
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Generate Response
+# ─────────────────────────────────────────────────────────────
+
+@GenerateResponse
+  ^ Serialize
+
+  #response -> String                  # generated text
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Model List Response
+# ─────────────────────────────────────────────────────────────
+
+@ModelListResponse
+  ^ Serialize
+
+  #models -> Vec<@ModelInfo>
+
+@ModelInfo
+  ^ Serialize
+
+  #name -> String
+  #path -> String
+  #size_mb -> f64
+  #model_type -> String
+  #quantization -> ?String
+  #is_discovered -> bool
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: API Handlers
+# ─────────────────────────────────────────────────────────────
+
+:generate(State(state), Json(req): Json<@GenerateRequest>) -> impl IntoResponse
+  # 1. lookup model via state.registry.to_spec(req.model)
+  # 2. if not found: return 404 with error JSON
+  # 3. load model via state.engine.load(spec)
+  # 4. build prompt:
+  #    - if req.prompt: use directly
+  #    - if req.messages: format with template
+  # 5. create GenOptions from request params
+  # 6. if req.stream:
+  #    - spawn tokio task with token callback
+  #    - return SSE stream
+  # 7. else:
+  #    - await loaded.generate(prompt, opts, None)
+  #    - return JSON response
+  
+  ! streaming uses Server-Sent Events (SSE)
+  ! non-streaming returns full response
+
+:list_models(State(state)) -> impl IntoResponse
+  # collects all available models:
+  #   - manual: state.registry.list()
+  #   - discovered: state.registry.discovered_models
+  # returns JSON array with ModelInfo for each
+
+:discover_models(State(state)) -> impl IntoResponse
+  # triggers state.registry.refresh_discovered_models()
+  # returns updated model list
+
+:load_model(State(state), Path(name)) -> impl IntoResponse
+  # explicitly loads model into memory
+  # useful for pre-warming
+
+:unload_model(State(state), Path(name)) -> impl IntoResponse
+  # releases model from memory
+  # placeholder for future model caching
+
+:model_status(State(state), Path(name)) -> impl IntoResponse
+  # returns JSON: { "model": name, "status": "unknown", "loaded": false }
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: WebSocket Handler
+# ─────────────────────────────────────────────────────────────
+
+:ws_generate(State(state), ws: WebSocketUpgrade) -> impl IntoResponse
+  # upgrades to WebSocket connection
+  # spawns handle_ws_generate task
+  
+:handle_ws_generate(state: Arc<@AppState>, socket: WebSocket)
+  # 1. receive JSON message with model/prompt/options
+  # 2. load model
+  # 3. generate with token callback:
+  #    - send each token as Text frame
+  # 4. send final JSON: { "done": true }
+  # 5. close socket
+  
+  ! real-time token streaming over WebSocket
+  ! each token sent as separate frame
+
+# ─────────────────────────────────────────────────────────────
+# ERROR HANDLING
+# ─────────────────────────────────────────────────────────────
+#
+# @ApiError enum:
+#   :ModelNotFound(String)    -> 404
+#   :GenerationFailed(String) -> 502
+#   :InvalidRequest(String)   -> 400
+#
+# All errors return JSON:
+# { "error": "message" }

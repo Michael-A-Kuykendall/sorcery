@@ -1,0 +1,33 @@
+[package]
+name = "shimmy"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["llama"]
+llama = []
+huggingface = []
+mlx = []
+safetensors = []
+candle = []
+gpu = []
+llama-cuda = []
+llama-vulkan = []
+llama-opencl = []
+
+[dependencies]
+anyhow = "1"
+async-trait = "0.1"
+axum = { version = "0.7", features = ["macros", "ws"] }
+chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4", features = ["derive"] }
+dirs = "5"
+futures = "0.3"
+regex = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tokio = { version = "1", features = ["full"] }
+tokio-stream = "0.1"
+walkdir = "2"
+uuid = { version = "1", features = ["v4"] }

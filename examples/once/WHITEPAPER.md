@@ -1,5 +1,7 @@
 # Sorcery Case Study: once
 
+**Authorship note:** This rehydration + analysis was produced by **Opus Claude 4.5**.
+
 ## Abstract
 
 Dehydrated [once](https://github.com/isaacs/once) (~40 lines) into Sorcery spells, then rehydrated without referencing the original.

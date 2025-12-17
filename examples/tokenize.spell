@@ -1,0 +1,13 @@
+#Spell: Tokenize
+^ Intent: produce stable, cross-platform tokens to enable deterministic inference and caching
+
+@Tokenizer
+  : utf8 -> tokens
+  ! deterministic
+  ! locale_free
+  ! order_preserved
+  - network
+  - persistence
+  - locale_settings
+  ~ valid_utf8
+  ~ non_empty_input

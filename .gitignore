@@ -1,0 +1,10 @@
+# Local scratch / upstream clones
+.tmp/
+
+# Rust build artifacts
+**/target/
+
+# Common editor/OS noise
+.DS_Store
+Thumbs.db
+.vscode/

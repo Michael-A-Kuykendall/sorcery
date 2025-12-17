@@ -1,19 +1,21 @@
+```glyph
 #Spell: Once
 ^ Intent: wrap a function so it executes at most once, caching and returning the result on subsequent calls
 
 @Once
   : (fn) -> wrapped_fn
-  ! returns_wrapper_function
   ! first_call_executes_original
   ! subsequent_calls_return_cached_value
   ! preserves_this_context
-  ! preserves_arguments
-  ! sets_called_flag_on_wrapper
-  ! sets_value_property_on_wrapper
+  ! preserves_arguments_on_first_call
+  ! preserves_function_name
+  ! preserves_function_length
+  ! exposes_called_flag_on_wrapper
+  ! exposes_value_property_on_wrapper
   ! called_flag_initially_false
   - throws_on_subsequent_calls
   - clears_cached_value
-  - limits_argument_passing
+  - resets_called_flag
   ~ fn_is_callable
 
 @OnceStrict
@@ -21,11 +23,9 @@
   > @Once
   ! throws_error_on_subsequent_calls
   ! error_message_includes_function_name
-  ! uses_fn_name_or_default_string
+  ! uses_fn_name_or_fallback
+  ! exposes_onceError_property
   - returns_cached_value_on_subsequent_calls
+  - silent_no_op
 
-@OnceMeta
-  : wrapper properties
-  ! has_called_boolean
-  ! has_value_property
-  ! strict_has_onceError_message
+```

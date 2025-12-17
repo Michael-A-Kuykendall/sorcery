@@ -1,0 +1,14 @@
+#Spell: Parse
+^ Intent: build a stable syntax tree for downstream semantic analysis
+
+@Parser
+  : tokens -> ast
+  > @Tokenizer
+  ! no_side_effects
+  ! deterministic
+  ! recoverable_errors
+  - io
+  - network
+  - mutation
+  ~ valid_token_stream
+  ~ grammar_compliance

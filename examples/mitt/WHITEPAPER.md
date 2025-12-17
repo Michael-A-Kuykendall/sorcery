@@ -1,5 +1,7 @@
 # Sorcery Case Study: mitt
 
+**Authorship note:** This rehydration + analysis was produced by **Opus Claude 4.5**.
+
 ## Abstract
 
 This document records an experiment in intent compression and reconstruction. We took [mitt](https://github.com/developit/mitt), a ~200 byte event emitter by Jason Miller, dehydrated it into Sorcery spells, then rehydrated it back to code without referencing the original source.
@@ -65,7 +67,7 @@ We read the original source and extracted intent into five spells:
 
 Using **only the spell files**, we generated `mitt.rehydrated.ts`.
 
-The agent (Claude) was instructed:
+The agent (Opus Claude 4.5) was instructed:
 > "Implement this using only the spells. Do not reference the original source."
 
 ---

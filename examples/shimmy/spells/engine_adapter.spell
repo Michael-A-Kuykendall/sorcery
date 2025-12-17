@@ -1,0 +1,118 @@
+# ════════════════════════════════════════════════════════════
+# engine_adapter.spell - Multi-Backend Routing Layer
+# ════════════════════════════════════════════════════════════
+# Shimmy: The 4.8MB OpenAI API Server
+# ════════════════════════════════════════════════════════════
+
+~ rust_semantics
+~ feature_flags
+~ backend_selection
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Backend Choice
+# ─────────────────────────────────────────────────────────────
+# Internal routing enum for selecting the appropriate engine.
+
+@BackendChoice
+  :Llama                               # llama.cpp (GGUF files)
+  :HuggingFace                         # HuggingFace transformers
+  :MLX                                 # Apple Silicon Metal
+  :SafeTensors                         # pure Rust safetensors
+  :Candle                              # candle framework
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Inference Engine Adapter
+# ─────────────────────────────────────────────────────────────
+# Routes model loading to the appropriate backend based on file type.
+
+@InferenceEngineAdapter
+  ^ @InferenceEngine
+
+  #llama_engine -> ?@LlamaEngine
+  #huggingface_engine -> ?@HuggingFaceEngine
+  #mlx_engine -> ?@MLXEngine
+  #safetensors_engine -> ?@SafeTensorsEngine
+
+  :new() -> Self
+    # initializes available engines based on feature flags:
+    #   cfg!(feature = "llama") -> Some(LlamaEngine::new())
+    #   cfg!(feature = "huggingface") -> Some(HuggingFaceEngine::new())
+    #   cfg!(feature = "mlx") && macos+aarch64 -> Some(MLXEngine::new())
+    #   always -> Some(SafeTensorsEngine::new())
+    
+  :select_backend(spec: &@ModelSpec) -> @BackendChoice
+    # auto-detection based on file extension and features:
+    #
+    # .gguf -> Llama (if feature enabled)
+    # .safetensors -> SafeTensors or HuggingFace
+    # .bin -> HuggingFace (PyTorch format)
+    # .npz -> MLX (if macOS ARM64)
+    #
+    # fallback chain: Llama > HuggingFace > SafeTensors
+    
+  # ───────────────────────────────────────────────────────────
+  # InferenceEngine Implementation  
+  # ───────────────────────────────────────────────────────────
+  
+  :load(spec: &@ModelSpec) -> Result<Box<dyn @LoadedModel>>
+    # 1. select_backend(spec) to choose engine
+    # 2. delegate to appropriate engine's load()
+    # 3. wrap result in trait object
+    #
+    # match self.select_backend(spec) {
+    #   BackendChoice::Llama => self.llama_engine.load(spec),
+    #   BackendChoice::HuggingFace => self.huggingface_engine.load(spec),
+    #   BackendChoice::MLX => self.mlx_engine.load(spec),
+    #   BackendChoice::SafeTensors => self.safetensors_engine.load(spec),
+    # }
+
+# ─────────────────────────────────────────────────────────────
+# FEATURE FLAGS
+# ─────────────────────────────────────────────────────────────
+#
+# cargo build --features llama           # llama.cpp CPU
+# cargo build --features llama-cuda      # llama.cpp + CUDA
+# cargo build --features llama-vulkan    # llama.cpp + Vulkan
+# cargo build --features llama-opencl    # llama.cpp + OpenCL
+# cargo build --features huggingface     # HuggingFace Python bridge
+# cargo build --features mlx             # Apple MLX (macOS ARM64 only)
+# cargo build --features gpu             # all GPU backends
+#
+# Default: llama (CPU-only)
+
+# ─────────────────────────────────────────────────────────────
+# BACKEND SELECTION PRIORITY
+# ─────────────────────────────────────────────────────────────
+#
+# For .gguf files:
+#   1. LlamaEngine (if feature = "llama")
+#   2. Error: "GGUF requires llama feature"
+#
+# For .safetensors files:
+#   1. SafeTensorsEngine (pure Rust, always available)
+#   2. HuggingFaceEngine (if feature = "huggingface")
+#
+# For .bin files (PyTorch):
+#   1. HuggingFaceEngine (requires Python)
+#   2. Error: "PyTorch format requires huggingface feature"
+#
+# For .npz files (MLX):
+#   1. MLXEngine (macOS ARM64 only)
+#   2. Error: "MLX format requires macOS ARM64"
+
+# ─────────────────────────────────────────────────────────────
+# ADAPTER PATTERN
+# ─────────────────────────────────────────────────────────────
+#
+# ┌────────────────────────────────────────────────────────────┐
+# │                 InferenceEngineAdapter                     │
+# │                         │                                  │
+# │    ┌─────────────────────────────────────────────────┐    │
+# │    │            select_backend()                      │    │
+# │    │                    │                             │    │
+# │    │    ┌───────────────┼───────────────┐             │    │
+# │    │    ▼               ▼               ▼             │    │
+# │    │  Llama       HuggingFace        MLX             │    │
+# │    │  Engine        Engine         Engine            │    │
+# │    └─────────────────────────────────────────────────┘    │
+# └────────────────────────────────────────────────────────────┘

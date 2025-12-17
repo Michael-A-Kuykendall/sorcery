@@ -1,42 +1,47 @@
+```glyph
 #Spell: FastDeepEqual
-^ Intent: recursively compare two values for structural equality, handling all JavaScript types correctly
+^ Intent: recursively compare two values for structural equality, handling JavaScript types correctly
 
 @Equal
   : (a, b) -> boolean
-  ! same_reference_returns_true
-  ! both_must_be_same_type
+  ! same_reference_returns_true_immediately
+  ! both_must_be_objects_to_continue
+  ! null_not_equal_to_object
   ! constructor_must_match
-  ! primitives_compared_by_value
-  ! NaN_equals_NaN
-  ! positive_zero_equals_negative_zero
-  ! arrays_compared_by_index
-  ! arrays_must_match_length
-  ! objects_compared_by_keys
-  ! objects_must_match_key_count
+  ! arrays_compared_by_length_then_index
+  ! objects_compared_by_key_count_then_values
   ! key_order_does_not_matter
-  ! recursively_compares_nested
-  ! Date_compared_by_valueOf
+  ! recursively_compares_nested_values
+  ! Date_compared_by_getTime
   ! RegExp_compared_by_source_and_flags
-  ! functions_compared_by_reference
-  ! null_only_equals_null
-  ! undefined_only_equals_undefined
-  ! objects_with_custom_valueOf_compared_by_valueOf
-  ! objects_with_custom_toString_compared_by_toString
+  ! NaN_equals_NaN
+  ! primitives_compared_by_strict_equality
   - handles_circular_references
   - handles_Map
   - handles_Set
   - handles_TypedArray
-  - handles_WeakMap
-  - handles_WeakRef
+  - handles_ArrayBuffer
+  - handles_Symbol_properties
+  - handles_getter_traps
   ~ no_circular_references_in_input
+  ~ objects_are_plain_no_getters
+  ~ prototype_chain_is_clean
 
 @ES6Equal
   : (a, b) -> boolean
   > @Equal
-  ! handles_Map_by_size_and_entries
-  ! handles_Set_by_size_and_has
-  ! handles_TypedArray_by_constructor_and_elements
-  ! Map_entries_compared_recursively
-  ! Set_membership_checked_by_has
-  ! TypedArray_requires_same_constructor
+  ! handles_Map_by_size_then_entries
+  ! handles_Set_by_size_then_has
+  ! handles_TypedArray_by_length_then_elements
+  ! Map_keys_compared_by_reference
+  ! Map_values_compared_recursively
+  ! Set_elements_checked_via_has_method
+  ! TypedArray_requires_matching_constructor
   - handles_circular_references
+  - handles_WeakMap
+  - handles_WeakRef
+  ~ set_has_uses_reference_equality
+  ~ map_get_uses_reference_equality
+  ~ objects_inside_Set_not_deep_compared
+
+```

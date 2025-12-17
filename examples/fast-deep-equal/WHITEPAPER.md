@@ -1,5 +1,7 @@
 # Sorcery Case Study: fast-deep-equal
 
+**Authorship note:** This rehydration + analysis was produced by **Opus Claude 4.5**.
+
 ## Abstract
 
 Dehydrated [fast-deep-equal](https://github.com/epoberezkin/fast-deep-equal) (~60 lines base, ~100 with ES6) into Sorcery spells, then rehydrated without referencing the original.

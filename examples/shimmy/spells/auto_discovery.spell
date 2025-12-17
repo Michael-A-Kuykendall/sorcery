@@ -1,0 +1,127 @@
+# ════════════════════════════════════════════════════════════
+# auto_discovery.spell - Filesystem Model Discovery
+# ════════════════════════════════════════════════════════════
+# Shimmy: The 4.8MB OpenAI API Server
+# ════════════════════════════════════════════════════════════
+
+~ rust_semantics
+~ async_std_fs
+~ pathbuf_paths
+~ recursive_directory_walk
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Discovered Model
+# ─────────────────────────────────────────────────────────────
+# Metadata extracted from filesystem scan without loading.
+
+@DiscoveredModel
+  #name -> String                      # derived from filename/directory
+  #path -> PathBuf                     # absolute path to model file
+  #lora_path -> ?PathBuf               # detected LoRA adapter (same dir)
+  #size_bytes -> u64                   # file size for display
+  #model_type -> String                # "gguf" | "safetensors" | "bin"
+  #parameter_count -> ?String          # parsed from filename (e.g., "7B", "13B")
+  #quantization -> ?String             # parsed from filename (e.g., "Q4_K_M", "Q8_0")
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Model Auto Discovery
+# ─────────────────────────────────────────────────────────────
+# The discovery engine that scans multiple locations.
+
+@ModelAutoDiscovery
+  #search_paths -> Vec<PathBuf>
+
+  :new() -> Self
+    # initializes with default search paths:
+    #   1. ./models/                        (project local)
+    #   2. parent of SHIMMY_BASE_GGUF       (env var)
+    #   3. paths from SHIMMY_MODEL_PATHS    (semicolon-separated)
+    #   4. paths from OLLAMA_MODELS         (Ollama compatibility)
+    #   5. ~/.cache/huggingface/hub/        (HuggingFace cache)
+    #   6. ~/.ollama/models/                (Ollama default)
+    #   7. ~/.lmstudio/models/              (LM Studio)
+    
+  :add_search_path(path: PathBuf)
+    # appends to search_paths
+    
+  :discover_models() -> HashMap<String, @DiscoveredModel>
+    # iterates all search_paths
+    # calls scan_directory_with_depth for each
+    # merges results into single HashMap
+    # handles duplicates by preferring first found
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Directory Scanning
+# ─────────────────────────────────────────────────────────────
+
+:scan_directory_with_depth(path: PathBuf, max_depth: usize) -> Vec<@DiscoveredModel>
+  # max_depth = 4 (prevents infinite recursion)
+  # walks directory tree
+  # for each file:
+  #   - checks extension (.gguf, .safetensors, .bin)
+  #   - calls parse_filename for metadata
+  #   - creates DiscoveredModel
+  # calls group_sharded_models to combine multi-part files
+  
+  ! filters out non-model files
+  ! respects max_depth to avoid slow scans
+
+:parse_filename(filename: &str) -> (@name, ?@param_count, ?@quantization)
+  # extracts metadata from model filenames like:
+  #   "llama-3-8b-instruct-Q4_K_M.gguf"
+  #     -> ("llama-3-8b-instruct", Some("8B"), Some("Q4_K_M"))
+  #   "phi3-mini-4k-instruct.gguf"
+  #     -> ("phi3-mini-4k-instruct", None, None)
+  #   "qwen2-7b-Q8_0-00001-of-00003.gguf"
+  #     -> ("qwen2-7b", Some("7B"), Some("Q8_0"))
+
+:group_sharded_models(models: Vec<@DiscoveredModel>) -> Vec<@DiscoveredModel>
+  # combines multi-part model files:
+  #   model-00001-of-00003.gguf
+  #   model-00002-of-00003.gguf
+  #   model-00003-of-00003.gguf
+  # into single entry pointing to first shard
+  # sums size_bytes across all shards
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Ollama Compatibility
+# ─────────────────────────────────────────────────────────────
+
+:discover_ollama_models(ollama_path: PathBuf) -> Vec<@DiscoveredModel>
+  # Ollama stores models as blobs with manifests
+  # walks ~/.ollama/models/manifests/
+  # for each manifest:
+  #   - reads JSON to find blob digests
+  #   - resolves blobs from ~/.ollama/models/blobs/
+  #   - creates DiscoveredModel with resolved path
+  
+  ! handles Ollama's blob-based storage
+  ! parses manifest JSON for layer digests
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: LLM-Only Filter
+# ─────────────────────────────────────────────────────────────
+
+:filter_llm_only(models: HashMap<String, @DiscoveredModel>) -> HashMap<String, @DiscoveredModel>
+  # removes non-LLM models based on name patterns:
+  #   - "clip-" | "clip_"           (CLIP models)
+  #   - "sd-" | "sdxl" | "stable-"  (Stable Diffusion)
+  #   - "whisper"                   (Audio)
+  #   - "vae" | "encoder"           (Components)
+  #   - "embedding" | "embed"       (Embedding models)
+  
+  ! preserves models without these patterns
+
+# ─────────────────────────────────────────────────────────────
+# SEARCH PATH PRIORITY
+# ─────────────────────────────────────────────────────────────
+#
+# 1. ./models/                     (project-local, highest priority)
+# 2. SHIMMY_BASE_GGUF parent       (explicit env config)
+# 3. SHIMMY_MODEL_PATHS            (user custom paths)
+# 4. OLLAMA_MODELS                 (Ollama env override)
+# 5. ~/.cache/huggingface/hub/     (HuggingFace downloads)
+# 6. ~/.ollama/models/             (Ollama default)
+# 7. ~/.lmstudio/models/           (LM Studio default)
+#
+# First match wins on name collision.

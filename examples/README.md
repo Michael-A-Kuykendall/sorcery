@@ -69,6 +69,10 @@ example-name/
 2. A pattern for library variants
 3. Acknowledgment that spells assume language knowledge
 
+### New: Context Asymmetry (Casting vs Invocation)
+These experiments also showed that casting is the high-context task and invocation is the low-context task.
+See `LESSONS_CONTEXT_ASYMMETRY.md`.
+
 ## Adding Examples
 
 When adding a new example:

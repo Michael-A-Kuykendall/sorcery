@@ -1,0 +1,149 @@
+# ════════════════════════════════════════════════════════════
+# server.spell - HTTP Server & Routing
+# ════════════════════════════════════════════════════════════
+# Shimmy: The 4.8MB OpenAI API Server
+# ════════════════════════════════════════════════════════════
+
+~ rust_semantics
+~ axum_framework
+~ tower_middleware
+~ tokio_async
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: App State
+# ─────────────────────────────────────────────────────────────
+# Shared application state available to all handlers.
+
+@AppState
+  #engine -> Box<dyn @InferenceEngine>
+  #registry -> @Registry
+  #observability -> @ObservabilityManager
+  #response_cache -> @ResponseCache
+
+  :new(engine: Box<dyn @InferenceEngine>, registry: @Registry) -> Self
+    # creates with default observability and cache
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: HTTP Routes
+# ─────────────────────────────────────────────────────────────
+# Axum router configuration with all endpoints.
+
+:run(addr: SocketAddr, state: Arc<@AppState>) -> Result<()>
+  # builds Router with routes:
+  #
+  # ── Health & Metrics ──────────────────────────────────────
+  # GET  /health         -> health_check()
+  # GET  /metrics        -> metrics_endpoint()
+  # GET  /diag           -> diag_handler()
+  #
+  # ── Native Shimmy API ─────────────────────────────────────
+  # POST /api/generate           -> api::generate()
+  # GET  /api/models             -> api::list_models()
+  # POST /api/models/discover    -> api::discover_models()
+  # POST /api/models/:name/load  -> api::load_model()
+  # POST /api/models/:name/unload -> api::unload_model()
+  # GET  /api/models/:name/status -> api::model_status()
+  # GET  /api/tools              -> api::list_tools()
+  # POST /api/tools/:name/execute -> api::execute_tool()
+  # POST /api/workflows/execute  -> api::execute_workflow()
+  #
+  # ── WebSocket ─────────────────────────────────────────────
+  # GET  /ws/generate            -> api::ws_generate()
+  #
+  # ── OpenAI Compatible ─────────────────────────────────────
+  # POST /v1/chat/completions    -> openai_compat::chat_completions()
+  # GET  /v1/models              -> openai_compat::models()
+  #
+  # ── Anthropic Compatible ──────────────────────────────────
+  # POST /v1/messages            -> anthropic_compat::messages()
+  #
+  # applies cors_layer middleware
+  # binds TcpListener to addr
+  # runs axum::serve()
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: CORS Middleware
+# ─────────────────────────────────────────────────────────────
+
+:cors_layer(req: Request, next: Next) -> Response
+  # adds CORS headers for browser compatibility:
+  #   Access-Control-Allow-Origin: *
+  #   Access-Control-Allow-Methods: GET, POST, OPTIONS
+  #   Access-Control-Allow-Headers: Content-Type, Authorization
+  #   Access-Control-Max-Age: 86400
+  #
+  # handles OPTIONS preflight with 200 OK
+  
+  ! allows all origins (development-friendly)
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Health Check Endpoint
+# ─────────────────────────────────────────────────────────────
+
+:health_check(State(state): State<Arc<@AppState>>) -> Json<Value>
+  # returns JSON:
+  # {
+  #   "status": "ok",
+  #   "service": "shimmy",
+  #   "version": env!("CARGO_PKG_VERSION"),
+  #   "models": {
+  #     "total": N,
+  #     "discovered": N,
+  #     "manual": N
+  #   },
+  #   "endpoints": {
+  #     "health": "/health",
+  #     "models": "/v1/models",
+  #     "chat": "/v1/chat/completions",
+  #     "generate": "/api/generate"
+  #   },
+  #   "compatibility": {
+  #     "openai": true,
+  #     "cors": true
+  #   },
+  #   "timestamp": "RFC3339",
+  #   "uptime_seconds": N
+  # }
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Metrics Endpoint
+# ─────────────────────────────────────────────────────────────
+
+:metrics_endpoint(State(state): State<Arc<@AppState>>) -> Json<Value>
+  # returns JSON:
+  # {
+  #   "models": {
+  #     "total_count": N,
+  #     "total_size_mb": N,
+  #     "by_type": { "discovered": N, "manual": N }
+  #   },
+  #   "system": {
+  #     "memory_total_mb": N,
+  #     "memory_free_mb": N,
+  #     "memory_available_mb": N
+  #   },
+  #   "features": {
+  #     "llama": bool,
+  #     "huggingface": bool
+  #   },
+  #   "endpoints": [...],
+  #   "timestamp": "RFC3339"
+  # }
+
+# ─────────────────────────────────────────────────────────────
+# SERVER STARTUP SEQUENCE
+# ─────────────────────────────────────────────────────────────
+#
+# 1. Parse CLI args
+# 2. Initialize Registry::with_discovery()
+# 3. Create engine (InferenceEngineAdapter or LlamaEngine)
+# 4. Build AppState
+# 5. Print startup diagnostics
+# 6. Bind to address (auto or manual)
+# 7. Start axum::serve()
+#
+# Ready message:
+#   "✅ Ready to serve requests"
+#   "   • POST /api/generate (streaming + non-streaming)"
+#   "   • GET  /health (health check + metrics)"
+#   "   • GET  /v1/models (OpenAI-compatible)"

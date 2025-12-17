@@ -1,5 +1,7 @@
 # Sorcery Case Study: dlv
 
+**Authorship note:** This rehydration + analysis was produced by **Opus Claude 4.5**.
+
 ## Abstract
 
 Dehydrated [dlv](https://github.com/developit/dlv) (~20 lines) into Sorcery spells, then rehydrated without referencing the original.

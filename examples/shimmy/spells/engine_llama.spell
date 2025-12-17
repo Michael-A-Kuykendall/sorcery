@@ -1,0 +1,136 @@
+# ════════════════════════════════════════════════════════════
+# engine_llama.spell - llama.cpp Backend Implementation
+# ════════════════════════════════════════════════════════════
+# Shimmy: The 4.8MB OpenAI API Server
+# ════════════════════════════════════════════════════════════
+
+~ rust_semantics
+~ ffi_bindings
+~ gpu_acceleration
+~ moe_architecture
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: GPU Backend Selection
+# ─────────────────────────────────────────────────────────────
+# Determines which GPU acceleration to use for inference.
+
+@GpuBackend
+  :Cpu                                 # no GPU, pure CPU inference
+  :Cuda                                # NVIDIA CUDA
+  :Vulkan                              # cross-platform Vulkan (AMD, NVIDIA, Intel)
+  :OpenCL                              # OpenCL for AMD/Intel
+  :Metal                               # Apple Silicon (via MLX)
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: MoE Configuration
+# ─────────────────────────────────────────────────────────────
+# Mixture of Experts CPU offloading for large models.
+
+@MoeConfig
+  #enabled -> bool                     # whether MoE offloading is active
+  #offload_all -> bool                 # --cpu-moe: offload ALL experts
+  #n_layers_cpu -> ?usize              # --n-cpu-moe N: offload first N layers
+
+  :default() -> Self
+    # enabled: false
+    # offload_all: false
+    # n_layers_cpu: None
+
+  :from_cli(cpu_moe: bool, n_cpu_moe: ?usize) -> Self
+    # converts CLI flags to config
+    ! cpu_moe and n_cpu_moe are mutually exclusive
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Llama Engine
+# ─────────────────────────────────────────────────────────────
+# The primary inference engine using llama.cpp bindings.
+
+@LlamaEngine
+  ^ @InferenceEngine
+
+  #backend -> @GpuBackend
+  #moe_config -> @MoeConfig
+
+  :new() -> Self
+    # creates with auto-detected backend
+    # auto-detection order: CUDA > Vulkan > OpenCL > CPU
+    
+  :new_with_backend(backend: ?&str) -> Self
+    # "auto" | "cpu" | "cuda" | "vulkan" | "opencl"
+    # "auto" triggers detection
+    
+  :new_with_moe(backend: ?&str, moe_config: @MoeConfig) -> Self
+    # full constructor with MoE support
+    
+  :get_backend_info() -> String
+    # returns human-readable backend description
+    # e.g., "CUDA (RTX 4090)" or "Vulkan (AMD RX 7900)"
+
+  # ───────────────────────────────────────────────────────────
+  # InferenceEngine Implementation
+  # ───────────────────────────────────────────────────────────
+  
+  :load(spec: &@ModelSpec) -> Result<Box<dyn @LoadedModel>>
+    # creates LlamaModel via FFI:
+    #   1. llama_load_model_from_file(path)
+    #   2. llama_new_context_with_model(model, params)
+    #   3. optionally load LoRA adapter
+    # wraps in LlamaLoaded
+    # applies MoE offloading if configured
+
+# ─────────────────────────────────────────────────────────────
+# INCANTATION: Llama Loaded Model
+# ─────────────────────────────────────────────────────────────
+# A loaded llama.cpp model ready for inference.
+
+@LlamaLoaded
+  ^ @LoadedModel
+
+  #model_ptr -> *mut llama_model       # FFI pointer to loaded model
+  #ctx -> Mutex<LlamaContext>          # thread-safe context wrapper
+  #n_ctx -> usize                      # context window size
+  #n_threads -> i32                    # inference threads
+
+  :generate(prompt: &str, opts: @GenOptions, on_token: ?) -> Result<String>
+    # Token generation loop:
+    #   1. tokenize prompt via llama_tokenize
+    #   2. llama_decode for prefill
+    #   3. sampling loop:
+    #      a. llama_get_logits
+    #      b. apply temperature, top_p, top_k, repeat_penalty
+    #      c. llama_sample_token
+    #      d. check stop conditions (max_tokens, stop_tokens, EOS)
+    #      e. if on_token: callback with decoded token
+    #   4. detokenize and return full text
+    
+  ! Mutex ensures single inference at a time
+  ! on_token enables streaming token-by-token
+
+# ─────────────────────────────────────────────────────────────
+# GPU BACKEND DETECTION
+# ─────────────────────────────────────────────────────────────
+#
+# :detect_gpu_backend() -> @GpuBackend
+#   1. check nvidia-smi for CUDA capability
+#   2. check vulkaninfo for Vulkan devices  
+#   3. check clinfo for OpenCL devices
+#   4. fallback to CPU
+#
+# Feature flags control which backends compile:
+#   --features llama-cuda
+#   --features llama-vulkan
+#   --features llama-opencl
+#   --features gpu (all of the above)
+
+# ─────────────────────────────────────────────────────────────
+# MoE CPU OFFLOADING (for large models)
+# ─────────────────────────────────────────────────────────────
+#
+# Mixture of Experts models (Mixtral, DeepSeek, Qwen-MoE) have
+# expert tensors that consume massive VRAM. CPU offloading
+# moves these to system RAM, enabling larger models on consumer GPUs.
+#
+# --cpu-moe: offload ALL expert tensors
+# --n-cpu-moe N: offload experts in first N layers only
+#
+# Trade-off: slower inference but fits in VRAM
