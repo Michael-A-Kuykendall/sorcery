@@ -1,0 +1,28 @@
+#Spell: InferenceABI
+^ Intent: define a stable contract boundary for model inference that survives version changes
+
+@InferenceEndpoint
+  : request -> response
+  ! version_tagged
+  ! backward_compatible
+  ! timeout_bounded
+  - streaming
+  - internal_state_exposure
+  - implicit_defaults
+  ~ authenticated_caller
+  ~ valid_schema
+
+@RequestSchema
+  : json -> validated_input
+  ! schema_versioned
+  ! strict_validation
+  - unknown_fields
+  ~ utf8_encoded
+
+@ResponseSchema
+  : inference_result -> json
+  ! deterministic_serialization
+  ! error_codes_enumerated
+  - stack_traces
+  - internal_ids
+  ~ successful_inference
