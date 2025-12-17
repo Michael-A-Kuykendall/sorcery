@@ -2,12 +2,10 @@
   <img src="assets/sorcery-logo.png" alt="Sorcery" width="350">
 </p>
 
-<p align="center">
-  <strong>🧙‍♂️ Compress genius into code. Dehydrate big ideas into spells that AI can actually execute.</strong>
-</p>
+<h1 align="center">Compress intent into spells.<br>Let lesser minds invoke them flawlessly.</h1>
 
 <p align="center">
-  <em>The missing link between your brilliant architecture vision and code that doesn't suck.</em>
+  <em>A notation for transmitting architectural wisdom across the context gap.</em>
 </p>
 
 <p align="center">
@@ -21,40 +19,42 @@
 
 ---
 
-> **⚠️ Heads up:** Sorcery is a *design doctrine* for architecture handoff—not a framework, language, or product. Think of it as a superpower for making your intent bulletproof.
+> **Note:** Sorcery is a *design doctrine* for architecture handoff—not a framework, language, or product. It is a way of encoding intent so it survives transmission.
 
 ---
 
-## 🔥 The Problem
+## ⚡ The Problem
 
-Ever poured your soul into explaining a complex system, only to watch it get mangled by:
+You've mapped the territory. You understand the tradeoffs. The architecture lives in your head, fully formed.
 
-- 🤖 AI assistants that "get it" but then hallucinate nonsense
-- 👶 Junior devs who nod along but miss the crucial tradeoffs
-- 🕰️ Future-you who stares at the code like "WTF was I thinking?"
+Then you hand it off—and watch it dissolve:
 
-**Your genius evaporates at handoff.** Deep constraints, architectural vision, and "obvious" decisions vanish into thin air. Teams waste weeks rediscovering what you already figured out.
+- ◆ Agents hallucinate where you were precise
+- ◆ Apprentices miss the constraints you thought were obvious  
+- ◆ Future-you inherits a codebase with no memory of why
 
-**Software development eats context for breakfast.** And it's starving your projects.
+**Intent evaporates at the boundary.** Deep constraints, non-obvious tradeoffs, and hard-won decisions vanish into narrative fog.
 
----
-
-## ✨ The Solution
-
-**Sorcery** is shorthand notation for dehydrating large thoughts into reusable, executable spells.
-
-- **Dehydrate:** Compress high-context genius into tiny, unambiguous artifacts
-- **Rehydrate:** Let AI/juniors expand them into perfect code without guessing
-
-It's like giving your brain a lossless compression algorithm for software design.
-
-**One sentence:** *Sorcery casts high-context intent into constrained spells so lower-context agents can act correctly without shared memory.*
+**Context is the scarcest resource in software.** And handoff destroys it.
 
 ---
 
-## 🚀 Quick Start
+## ✦ The Solution
 
-Want to see the magic? Here's a spell that defines a tokenizer:
+**Sorcery** is a notation for binding intent into transmissible form.
+
+- **Cast:** Compress high-context reasoning into a spell—terse, complete, unambiguous
+- **Invoke:** Let agents expand the spell into code, tests, or docs without guessing
+
+Think of it as enchanting your architecture so it can be wielded by anyone.
+
+**The core idea:** *Sorcery casts high-context intent into constrained spells so lower-context agents can act correctly without shared memory.*
+
+---
+
+## ✧ Quick Start
+
+Here is a spell that binds a tokenizer's contract:
 
 ```glyph
 #Spell: Tokenize
@@ -69,34 +69,32 @@ Want to see the magic? Here's a spell that defines a tokenizer:
   ~ valid_utf8
 ```
 
-**This isn't code—it's intent.** It tells AI exactly what must happen (and what must *never* happen) so it can write the implementation flawlessly.
-
-No more "I think you meant..."—just perfect execution.
+**This isn't code—it's bound intent.** It declares what must hold, what is forbidden, and why—so any agent can invoke it without improvisation.
 
 ---
 
-## 🛠️ How It Works
+## ⚗️ How It Works
 
 ### The Core Asymmetry
 
-Sorcery enforces genius at the top, automation below:
+Sorcery enforces a clean separation between those who encode intent and those who execute it:
 
-| Phase | Who Does It | What Happens |
-|-------|-------------|--------------|
-| **🧠 Casting** | You (the architect) | Compress reasoning into a spell |
-| **🤖 Invocation** | AI/Juniors | Expand spell into code/tests/docs |
+| Phase | Who | What Happens |
+|-------|-----|--------------|
+| **Casting** | The architect | Bind reasoning into a spell |
+| **Invocation** | Agents, apprentices | Expand the spell into artifacts |
 
 **Casting destroys excess context.**  
 **Invocation never invents missing intent.**
 
-### Spells: Your Atomic Design Units
+### Spells: Atomic Units of Intent
 
-A **Spell** is one focused capability, locked down tight:
+A **Spell** is one focused capability, bound tight:
 
-- **🎯 Intent:** The "why" that survives all tradeoffs
-- **✅ Guarantees:** What must *always* be true
-- **🔍 Assumptions:** What you depend on
-- **🚫 Exclusions:** What you *forbid* (crucial!)
+- **Intent** — The "why" that survives all tradeoffs
+- **Guarantees** — What must *always* hold
+- **Assumptions** — What the spell relies upon
+- **Exclusions** — What is *forbidden* (often the most important part)
 
 Every spell does **exactly one thing**. No bloat, no ambiguity.
 
@@ -116,23 +114,23 @@ Every spell does **exactly one thing**. No bloat, no ambiguity.
 | `>` | Dependency | `> @Tokenizer` |
 | `?` | Open question | `? performance reqs` |
 
-**Why symbols?** Prose lies. Symbols enforce structure. AI parses them perfectly.
+**Why symbols?** Prose is ambiguous. Glyphs enforce structure. Agents parse them cleanly.
 
-### Slice Gating: Quality Control
+### Slice Gating: The Seal of Completion
 
-A spell can't execute until it's **complete**:
+A spell cannot be invoked until it is **sealed**:
 
-- ✅ Intent declared
-- ✅ No open questions (`?`)
-- ✅ Guarantees explicit
-- ✅ At least one exclusion
-- ✅ Does exactly one thing
+- ◆ Intent declared
+- ◆ No open questions (`?`) remain
+- ◆ Guarantees made explicit
+- ◆ At least one exclusion stated
+- ◆ Does exactly one thing
 
-**Malformed spells block deployment.** Quality by design.
+**A malformed spell cannot be cast.** This is quality by constraint.
 
 ---
 
-## 📚 Examples
+## ◈ Examples
 
 ### Basic Spell: Tokenization
 
@@ -149,12 +147,12 @@ A spell can't execute until it's **complete**:
   ~ valid_utf8
 ```
 
-**What it declares:**
-- ✓ What it does (utf8 → tokens)
-- ✓ Why it exists (deterministic inference)
-- ✓ What must hold (deterministic, locale-free)
-- ✓ What it forbids (network, persistence)
-- ✓ What it assumes (valid utf8)
+**What it binds:**
+- ◆ What it does (utf8 → tokens)
+- ◆ Why it exists (deterministic inference)
+- ◆ What must hold (deterministic, locale-free)
+- ◆ What it forbids (network, persistence)
+- ◆ What it assumes (valid utf8)
 
 ### Composed Spells: Building Systems
 
@@ -170,7 +168,7 @@ A spell can't execute until it's **complete**:
   ~ valid_token_stream
 ```
 
-Spells compose through **explicit contracts**—no hidden dependencies, no "as discussed" nonsense.
+Spells compose through **explicit contracts**—no hidden dependencies, no implied knowledge.
 
 ### Advanced: Multi-Entity Spell
 
@@ -200,7 +198,7 @@ Spells compose through **explicit contracts**—no hidden dependencies, no "as d
 
 ---
 
-## 🎯 Why This Works
+## ⚔️ Why This Works
 
 ### Negative Space Matters
 
@@ -227,18 +225,18 @@ Explicit forbid over  Implied scope
 Artifacts       over  Memory
 ```
 
-**Canonical rule:** *Write spells that say exactly what must happen and what must never happen—so weaker agents can act without guessing.*
+**The canonical rule:** *Write spells that declare exactly what must happen and what must never happen—so any agent can invoke them without guessing.*
 
 ---
 
-## 🚀 Get Started
+## ⚡ Begin
 
-1. **Pick a component** in your system that keeps breaking
-2. **Write its Intent** (the "why" that survives tradeoffs)
+1. **Choose a component** that keeps breaking or drifting
+2. **Name the intent** — the "why" that must survive all tradeoffs
 3. **Declare guarantees, assumptions, exclusions**
-4. **Feed to AI** for implementation
+4. **Hand the spell to an agent** for invocation
 
-**Pro tip:** Start small. One spell. Watch the magic happen.
+**Start with one spell.** See what survives.
 
 ### Repository Structure
 
@@ -255,14 +253,14 @@ sorcery/
 
 ### Contributing
 
-Got a spell? Want to improve the doctrine? Open an issue/PR. Let's make architecture handoff not suck.
+Found a better incantation? Want to sharpen the doctrine? Open an issue or PR.
 
 ---
 
 <p align="center">
-  <strong>🧙‍♂️ Sorcery: Because your ideas deserve to survive handoff.</strong>
+  <strong>Sorcery — because intent deserves to survive transmission.</strong>
 </p>
 
 <p align="center">
-  <sub>Design doctrine for intent compression. Not magic—just disciplined genius.</sub>
+  <sub>A design doctrine. Not magic—disciplined compression.</sub>
 </p>
