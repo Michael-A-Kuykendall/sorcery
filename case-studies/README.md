@@ -9,6 +9,7 @@ These are **not** the controlled dehydration/rehydration experiments (see [`exam
 | Case Study | Project | What Was Built | Author |
 |------------|---------|----------------|--------|
 | [CrabCamera Audio](CRABCAMERA_AUDIO_IMPLEMENTATION.md) | CrabCamera v0.5.0 | Complete audio recording subsystem (10 spells) | Claude Opus 4.5 |
+| [creepy-json Public API](CREEPY_JSON_PUBLIC_API.md) | creepy-json | Full public API (20 spells, 13-step casting order) | Claude Opus 4.5 |
 
 ## Why Case Studies Matter
 
