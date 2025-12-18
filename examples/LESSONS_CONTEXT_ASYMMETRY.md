@@ -84,7 +84,7 @@ If you can’t confidently declare an inventory as exact, you must gate it:
 ```
 
 This converts the most common “AI filled in the blanks” failure into a slice-gating failure—which is exactly what Sorcery wants.
-
+**Update:** Upon further analysis, this "rule" is actually just **proper use of the `>` dependency glyph**. When architecting, enumerate dependencies via `>`. What isn't listed doesn't exist. The grammar already handles exactness—the experiments exposed sloppy casting, not a missing rule.
 ---
 
 ## 5) Practical workflow recommendation

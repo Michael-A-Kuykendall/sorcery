@@ -56,7 +56,7 @@ Think of it as enchanting your architecture so it can be wielded by anyone.
 
 Sorcery is intentionally **downward-facing**: casting spells is a high-context planning task; invocation is a low-context execution task.
 
-In practice, most failures show up when spells don’t explicitly seal “exact sets” (commands, routes, exports), and invokers are forced to improvise.
+In practice, most failures show up when spells describe things loosely instead of enumerating dependencies with `>`. What isn't listed as a dependency doesn't exist.
 See `examples/LESSONS_CONTEXT_ASYMMETRY.md`.
 
 ---

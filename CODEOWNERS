@@ -1,0 +1,11 @@
+# This file defines code review ownership for Sorcery.
+# All changes require approval from the lead maintainer to preserve
+# notation consistency and project vision.
+
+# Require maintainer review for everything
+*   @Michael-A-Kuykendall
+
+# Notation and doctrine are especially sensitive
+/sorcery_final_doctrine_v_1.md  @Michael-A-Kuykendall
+/examples/                       @Michael-A-Kuykendall
+/README.md                       @Michael-A-Kuykendall
