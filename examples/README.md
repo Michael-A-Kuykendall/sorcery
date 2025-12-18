@@ -61,6 +61,14 @@ See **[WHITEPAPER_EXPERIMENT_ASSESSMENT.md](WHITEPAPER_EXPERIMENT_ASSESSMENT.md)
 - Evidence that higher-context AI would prevent observed divergences
 - Confirmation that the 9-symbol grammar is complete
 
+## Version Note (Provenance)
+
+These case studies were largely cast and written against the Sorcery doctrine as it existed at commit `d114aee` (the cross-model assessment + OSS baseline).
+
+Later, the doctrine was clarified to add a small “Dependency Patterns” primer and to tighten `>` to mean **dependency (requires)** at commit `7182854`.
+
+If you are reproducing these experiments or authoring new spells, use the current doctrine; treat older examples as historical artifacts of the experiment timeline.
+
 ## Insights from Case Studies
 
 ### What Spells Capture Well

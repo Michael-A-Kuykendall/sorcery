@@ -203,6 +203,14 @@ Spells compose through **explicit contracts**—no hidden dependencies, no impli
 
 **See the full examples in** [`examples/`](examples/)
 
+### Provenance (Examples vs Doctrine)
+
+The case studies in `examples/` were largely produced around commit `d114aee`.
+
+A later doctrine clarification tightened `>` to mean dependency (requires) and added a small dependency-pattern primer at commit `7182854`.
+
+If you are reproducing results or writing new spells, use the current doctrine; treat older examples as historical artifacts of the experiment timeline.
+
 ---
 
 ## ⚔️ Why This Works
