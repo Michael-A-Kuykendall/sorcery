@@ -150,8 +150,56 @@ Markdown, code, and tests are downstream.
 | `!` | Guarantee / Invariant |
 | `~` | Assumption |
 | `-` | Explicit exclusion |
-| `>` | Dependency / flow |
+| `>` | Dependency (requires) |
 | `?` | Open question (blocks gating) |
+
+### 7.1 Dependency Patterns (Using `>`)
+
+`>` has one meaning: **requires**.
+
+Use `:` for flow/shape (`input -> output`). Use `>` only for architectural dependency.
+
+To disambiguate intent without new glyphs, use **naming** plus **delta lines** (`!`/`-`/`~`).
+
+**Pattern A — Prerequisite dependency** (cannot be correct without)
+
+```
+@Parser
+  > @Tokenizer
+```
+
+**Pattern B — Optional extension layering** (extension depends on core)
+
+```
+@Core:Tokenizer
+  : utf8 -> tokens
+  ! deterministic
+
+@Extension:Tokenizer_Tracing
+  > @Core:Tokenizer
+  ~ optional
+  ! core_contract_unchanged
+```
+
+**Pattern C — Variant refinement** (variant depends on base, with explicit delta)
+
+```
+@Base:Server
+  : request -> response
+  ! openai_compat
+
+@Variant:Server_AnthropicCompat
+  > @Base:Server
+  ! adds_anthropic_compat
+  - supports_sse
+  ~ requires_api_key
+```
+
+**Lint (quick check)**
+
+- Every `>` targets a **named** component (`@Something`), not prose.
+- Every `@Extension`/`@Variant` includes at least one delta line (`!`/`-`/`~`) explaining what changes.
+- If a set must be exact, enumerate dependencies with `>` (unlisted = does not exist).
 
 ---
 
