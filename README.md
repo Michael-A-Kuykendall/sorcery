@@ -121,6 +121,8 @@ Every spell does **exactly one thing**. No bloat, no ambiguity.
 | `>` | Dependency | `> @Tokenizer` |
 | `?` | Open question | `? performance reqs` |
 
+**Note on `?`:** Open questions block the entire casting process—resolve them *before* producing a sealed spellbook, not after.
+
 **Why symbols?** Prose is ambiguous. Glyphs enforce structure. Agents parse them cleanly.
 
 ### Slice Gating: The Seal of Completion
@@ -176,6 +178,8 @@ A spell cannot be invoked until it is **sealed**:
 ```
 
 Spells compose through **explicit contracts**—no hidden dependencies, no implied knowledge.
+
+**Note on execution order:** The `>` dependency graph defines implementation order. Start with spells that have no dependencies, then proceed to those whose dependencies are satisfied. Do not ask "what's next?"—the DAG tells you.
 
 ### Advanced: Multi-Entity Spell
 
