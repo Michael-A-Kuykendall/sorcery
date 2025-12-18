@@ -271,7 +271,7 @@ The methodology is particularly well-suited for AI agents. We excel at precise e
 - **Language:** Rust 1.75+
 - **Platform:** Windows 11
 - **Frameworks:** Tauri 2.0, cpal 0.15, libopus_sys 0.3.2
-- **Muxer:** Muxide (custom, private)
+- **Muxer:** Muxide
 - **Session Date:** December 17, 2025
 
 ---
