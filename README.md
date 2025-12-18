@@ -2,7 +2,7 @@
   <img src="assets/sorcery-logo.png" alt="Sorcery" width="350">
 </p>
 
-<h1 align="center">Compress intent into spells.<br>Let lesser minds invoke them flawlessly.</h1>
+<h3 align="center">Compress intent into spells.<br>Let lesser minds invoke them flawlessly.</h3>
 
 <p align="center">
   <em>A notation for transmitting architectural wisdom across the context gap.</em>
@@ -19,9 +19,7 @@
 
 ---
 
-> **Note:** Sorcery is a *design doctrine* for architecture handoff—not a framework, language, or product. It is a way of encoding intent so it survives transmission.
-
-> **Also:** Sorcery is not code stenography or a byte-for-byte recorder; it’s a creation/handoff tool that preserves intent, contracts, and constraints—implementation details may differ.
+> **Note:** Sorcery is a *design doctrine* for architecture handoff—not a framework, language, or product. It encodes intent so it survives transmission. It is not code stenography or a byte-for-byte recorder; implementation details may differ while contracts and constraints are preserved.
 
 ---
 
