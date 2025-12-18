@@ -1,6 +1,10 @@
 # Local scratch / upstream clones
 .tmp/
 
+# Local drafts / internal notes (do not commit)
+REDDIT_POST_DRAFT.md
+whitepapers/
+
 # Rust build artifacts
 **/target/
 
