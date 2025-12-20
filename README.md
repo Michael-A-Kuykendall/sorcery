@@ -137,6 +137,27 @@ A spell cannot be invoked until it is **sealed**:
 
 **A malformed spell cannot be cast.** This is quality by constraint.
 
+### Cleanup Rule: De-Sorcery Before Delivery
+
+Spells may use Sorcery shorthand during planning, but shipped artifacts must not.
+
+- Keep Sorcery words in planning docs only.
+- Production specs should exclude them (e.g. `- sorcery_terms_in_artifacts`).
+- Invocations must be neutral; `glyph-verify` rejects Sorcery jargon in invocation payloads.
+
+### Sigil: Spell-by-Spell Verification
+
+`glyph-verify` compares a canonical spec against an invocation:
+
+- Single spell: pass files containing only that `#Spell:` block.
+- Whole spellbook: pass the full files.
+
+```
+glyph-verify ./specs/headless.spell ./invocations/headless.invocation.spell
+```
+
+`BOUND` means covered; `NOT BOUND` prints the first mismatch (with line numbers).
+
 ---
 
 ## ◈ Examples

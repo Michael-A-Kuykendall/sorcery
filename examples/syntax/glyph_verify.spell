@@ -1,0 +1,43 @@
+#Spell: ConstraintGate
+^ Intent: deterministically verify that an artifact description covers a specification’s declared constraints
+
+@Parser
+  : constraint_text -> ast
+  ! deterministic
+  ! stable_normalization
+  ! ignores_markdown_fenced_blocks
+  ! ignores_comment_lines
+  ! strips_inline_comments_after_whitespace_hash
+  ! supports_crlf_and_lf
+  ! rejects_unknown_leading_tokens_with_line_number
+  - semantic_inference
+  - network
+  - filesystem_writes
+  ~ grammar_is_#^@:!~->?
+  ~ open_question_is_only_leading_?
+
+@Comparator
+  : (spec_ast, artifact_ast) -> verdict
+  ! fails_on_missing_intent
+  ! fails_on_missing_guarantees
+  ! fails_on_missing_exclusions
+  ! fails_on_missing_dependencies
+  ! emits_actionable_diff
+  ! diff_is_deterministically_ordered
+  ! errors_include_line_numbers_when_available
+  - guessing
+  - nondeterminism
+  ~ artifact_description_written_from_output
+
+@CLI
+  : (spec_path, artifact_path, flags) -> exit_code
+  ! exit_0_on_pass
+  ! exit_1_on_mismatch
+  ! exit_2_on_usage_or_parse_error
+  - network
+  - filesystem_writes
+
+@Verdict
+  : input -> pass_fail
+  ! binary
+  - partial_success

@@ -242,6 +242,14 @@ A spell may be gated and invoked only when:
 
 A malformed spell cannot be invoked.
 
+### De-Sorcery Cleanup Step
+
+Before shipping an invocation, strip Sorcery jargon from the artifact:
+
+- Add an exclusion such as `- sorcery_terms_in_artifacts` to any production spell.
+- Rename components, payload text, and user-facing strings so they no longer contain Sorcery vocabulary (`spell`, `glyph`, `sigil`, `sorcery`, `invocation`, `incantation`, etc.).
+- Invocation is not complete until the sigil validates the cleaned artifact (forbidden terms will cause `NOT BOUND`).
+
 ---
 
 ## 10. Composition
