@@ -3,11 +3,12 @@
 
 @Tokenizer
   : utf8 -> tokens
-  ! deterministic
-  ! locale_free
-  ! order_preserved
-  - network
-  - persistence
-  - locale_settings
-  ~ valid_utf8
-  ~ non_empty_input
+  $ require: fn tokenize
+  $ forbid: network
+  $ forbid: persistence
+  $ forbid: locale_settings
+  $ prove: deterministic -> test: det
+  $ prove: locale_free -> test: locale
+  $ prove: order_preserved -> test: order
+  $ prove: valid_utf8 -> test: valid_utf8
+  $ prove: non_empty_input -> test: non_empty

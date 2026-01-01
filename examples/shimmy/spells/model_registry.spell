@@ -53,12 +53,12 @@
   # ───────────────────────────────────────────────────────────
   
   :new() -> Self
-    ! inner starts empty
-    ! discovered_models starts empty
+    $ prove: inner starts empty -> test: inner_empty
+    $ prove: discovered_models starts empty -> test: discovered_empty
   
   :with_discovery() -> Self
-    ! creates ModelAutoDiscovery
-    ! populates discovered_models from scan
+    $ prove: creates ModelAutoDiscovery -> test: creates_discovery
+    $ prove: populates discovered_models from scan -> test: populates_discovered
     
   :default() -> Self
     # alias for new()
@@ -87,7 +87,7 @@
     # first checks inner (manual)
     # then checks discovered_models
     # converts to ModelSpec for engine
-    ! manual entries take priority over discovered
+    $ prove: manual entries take priority over discovered -> test: manual_priority
 
   # ───────────────────────────────────────────────────────────
   # Listing

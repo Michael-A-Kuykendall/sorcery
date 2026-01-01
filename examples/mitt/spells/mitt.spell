@@ -7,27 +7,29 @@
   > @On
   > @Off
   > @Emit
-  ! factory_function
-  ! returns_frozen_interface
-  ! exposes_internal_map
-  ! accepts_existing_map
-  ! ~200_bytes_minified
-  - class_based
-  - singleton
-  - namespace_pollution
-  - framework_coupling
-  - async_events
-  - once_method
-  - error_boundaries
-  ~ all_parameter_optional
-  ~ map_injected_or_created
+  $ require: fn mitt
+  $ forbid: class_based
+  $ forbid: singleton
+  $ forbid: namespace_pollution
+  $ forbid: framework_coupling
+  $ forbid: async_events
+  $ forbid: once_method
+  $ forbid: error_boundaries
+  $ prove: factory_function -> test: factory
+  $ prove: returns_frozen_interface -> test: frozen_interface
+  $ prove: exposes_internal_map -> test: internal_map
+  $ prove: accepts_existing_map -> test: existing_map
+  $ prove: ~200_bytes_minified -> test: minified_size
+  $ prove: all_parameter_optional -> test: all_optional
+  $ prove: map_injected_or_created -> test: map_inject
 
 @Emitter
   : interface
-  ! has_all_property
-  ! has_on_method
-  ! has_off_method  
-  ! has_emit_method
-  - has_once_method
-  - has_clear_method
-  - has_listeners_method
+  $ require: interface Emitter
+  $ forbid: has_once_method
+  $ forbid: has_clear_method
+  $ forbid: has_listeners_method
+  $ prove: has_all_property -> test: all_property
+  $ prove: has_on_method -> test: on_method
+  $ prove: has_off_method -> test: off_method
+  $ prove: has_emit_method -> test: emit_method

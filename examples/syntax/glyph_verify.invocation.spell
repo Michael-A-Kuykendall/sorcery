@@ -3,25 +3,26 @@
 
 @Parser
   : constraint_text -> ast
-  ! deterministic
-  ! stable_normalization
-  - semantic_inference
-  - network
-  - filesystem_writes
-  ~ grammar_is_#^@:!~->?
+  $ require: fn parse
+  $ forbid: semantic_inference
+  $ forbid: network
+  $ forbid: filesystem_writes
+  $ prove: deterministic -> test: det
+  $ prove: stable_normalization -> test: stable
+  $ prove: grammar_is_#^@:!~->? -> test: grammar_check
 
 @Comparator
   : (spec_ast, artifact_ast) -> verdict
-  ! fails_on_missing_intent
-  ! fails_on_missing_guarantees
-  ! fails_on_missing_exclusions
-  ! fails_on_missing_dependencies
-  ! emits_actionable_diff
-  - guessing
-  - nondeterminism
-  ~ artifact_description_written_from_output
+  $ require: fn compare
+  $ forbid: guessing
+  $ forbid: nondeterminism
+  $ prove: fails_on_missing_intent -> test: intent_check
+  $ prove: fails_on_missing_obligations -> test: obligation_check
+  $ prove: fails_on_missing_dependencies -> test: dependency_check
+  $ prove: emits_actionable_diff -> test: diff_output
+  $ prove: artifact_description_written_from_output -> test: artifact_desc
 
 @Verdict
   : input -> pass_fail
-  ! binary
-  - partial_success
+  $ require: fn verdict
+  $ prove: binary -> test: binary_output

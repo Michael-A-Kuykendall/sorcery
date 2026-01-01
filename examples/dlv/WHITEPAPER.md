@@ -1,6 +1,6 @@
-# Sorcery Case Study: dlv
+# Sorcery Case Study: dlv (Reset to Test-Bound Spells)
 
-**Authorship note:** This rehydration + analysis was produced by **Opus Claude 4.5**.
+**Authorship note:** Original analysis by **Opus Claude 4.5**. Updated for test-bound reset.
 
 ## Abstract
 
@@ -26,7 +26,13 @@ This library is simple enough to be a single spell.
 
 ---
 
-## Comparison
+## Original Experiment (Semantic Analysis)
+
+Dehydrated dlv into spells, rehydrated without referencing the original.
+
+**Result:** 100% behavioral fidelity.
+
+### Comparison (Original vs Rehydrated)
 
 | Aspect | Original | Rehydrated | Verdict |
 |--------|----------|------------|---------|
@@ -38,32 +44,58 @@ This library is simple enough to be a single spell.
 | Uses `key.split ?` check | ✓ | Uses typeof | ⚠️ |
 | Uses for loop with p param | ✓ | Standard for loop | ⚠️ |
 
-### Behavioral: 100% match
-### Implementation: Minor divergence
+**Behavioral:** 100% match  
+**Implementation:** Minor divergence (duck-typing vs typeof, loop style).
 
-The original uses a clever `key.split ?` check (duck-typing for string). The rehydrated uses `typeof`. Same behavior, different idiom.
-
----
-
-## What the Spell Captured
-
+### What the Spell Captured
 - ✓ Input contract (obj, path, default)
-- ✓ Output contract (value or default)
-- ✓ Path handling (string/array)
-- ✓ Nullish short-circuit behavior
-- ✓ All exclusions (no throwing, no cloning)
+- ✓ Safe traversal
+- ✓ Default handling
+- ✓ Nullish short-circuit
+
+### What the Spell Missed
+Nothing. Single function, fully captured.
+
+### Doctrine Observation
+Simple functions map directly to single spells; obligations cover all behaviors.
 
 ---
 
-## What the Spell Missed
+## New Experiment (Test-Bound Spells)
 
-Nothing behavioral. The spell fully captured the intent.
+Rebuilt from test-bound spell with comprehensive test suite covering all prove obligations.
 
----
+### Test Suite Coverage
 
-## Doctrine Observation
+The test-bound rehydration includes executable tests for each `$ prove` obligation:
 
-**dlv is small enough that the spell is nearly 1:1 with the code.** This is expected—Sorcery shines more on larger components where compression matters.
+| Test File | Obligation | Description |
+|-----------|------------|-------------|
+| `string_path.test.ts` | `accepts_string_path_with_dots` | Handles dot-notation paths |
+| `array_path.test.ts` | `accepts_array_path` | Handles array paths |
+| `splits_dots.test.ts` | `splits_string_on_dots` | Splits strings on dots |
+| `undefined_missing.test.ts` | `returns_undefined_if_no_default_and_missing` | Returns undefined when no default |
+| `default_missing.test.ts` | `returns_default_if_path_missing` | Returns default when path missing |
+| `actual_value.test.ts` | `returns_actual_value_if_found` | Returns actual value when found |
+| `null_chain.test.ts` | `handles_null_in_chain` | Handles null in property chain |
+| `undefined_chain.test.ts` | `handles_undefined_in_chain` | Handles undefined in property chain |
+| `short_circuit.test.ts` | `short_circuits_on_nullish` | Stops traversal on nullish values |
+| `obj_check.test.ts` | `obj_is_object_or_nullish` | Validates input object |
+
+### Comparison (New vs Original)
+- **Notation:** !/- → $ obligations with tests
+- **Enforcement:** Semantic → Test-evidence with executable suite
+- **Code:** Identical functionality
+- **Fidelity:** 100% maintained with test verification
+
+### What the Test-Bound Spell Adds
+- Executable tests for all prove obligations
+- Fail-closed validation of forbid constraints
+- Runtime verification of all requirements
+- Complete test coverage ensuring behavioral fidelity
+
+### Learnings
+Dlv's simplicity translates well to test-bound spells; the comprehensive test suite ensures no behavioral drift occurs during transmission.
 
 ---
 
@@ -75,6 +107,19 @@ examples/dlv/
 ├── WHITEPAPER.md
 ├── spells/
 │   └── dlv.spell
-└── rehydrated/
-    └── dlv.ts
+├── rehydrated/
+│   └── dlv.ts
+└── rehydrated2/
+    ├── dlv.ts
+    └── tests/
+        ├── string_path.test.ts
+        ├── array_path.test.ts
+        ├── splits_dots.test.ts
+        ├── undefined_missing.test.ts
+        ├── default_missing.test.ts
+        ├── actual_value.test.ts
+        ├── null_chain.test.ts
+        ├── undefined_chain.test.ts
+        ├── short_circuit.test.ts
+        └── obj_check.test.ts
 ```

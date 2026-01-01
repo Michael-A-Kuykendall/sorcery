@@ -3,10 +3,10 @@
 
 @HandlerMap
   : event_type -> handler_list
-  ! map_based
-  ! supports_wildcard_key
-  ! handlers_are_arrays
-  ! preserves_insertion_order
-  - weak_references
-  - auto_cleanup
-  ~ event_type_is_string_or_symbol
+  $ require: map_based -> test: map_base
+  $ require: supports_wildcard_key -> test: wildcard_support
+  $ require: handlers_are_arrays -> test: array_handlers
+  $ require: preserves_insertion_order -> test: insertion_order
+  $ forbid: weak_references -> test: no_weak_ref
+  $ forbid: auto_cleanup -> test: no_auto_cleanup
+  $ prove: event_type_is_string_or_symbol -> test: string_symbol_type

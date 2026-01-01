@@ -63,8 +63,8 @@
   #   - creates DiscoveredModel
   # calls group_sharded_models to combine multi-part files
   
-  ! filters out non-model files
-  ! respects max_depth to avoid slow scans
+  $ require: filters out non-model files -> test: filter_non_model
+  $ require: respects max_depth to avoid slow scans -> test: respect_max_depth
 
 :parse_filename(filename: &str) -> (@name, ?@param_count, ?@quantization)
   # extracts metadata from model filenames like:
@@ -95,8 +95,8 @@
   #   - resolves blobs from ~/.ollama/models/blobs/
   #   - creates DiscoveredModel with resolved path
   
-  ! handles Ollama's blob-based storage
-  ! parses manifest JSON for layer digests
+  $ require: handles Ollama's blob-based storage -> test: ollama_blobs
+  $ require: parses manifest JSON for layer digests -> test: parse_manifest
 
 # ─────────────────────────────────────────────────────────────
 # INCANTATION: LLM-Only Filter
@@ -110,7 +110,7 @@
   #   - "vae" | "encoder"           (Components)
   #   - "embedding" | "embed"       (Embedding models)
   
-  ! preserves models without these patterns
+  $ require: preserves models without these patterns -> test: preserve_models
 
 # ─────────────────────────────────────────────────────────────
 # SEARCH PATH PRIORITY

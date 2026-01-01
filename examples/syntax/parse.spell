@@ -4,11 +4,12 @@
 @Parser
   : tokens -> ast
   > @Tokenizer
-  ! no_side_effects
-  ! deterministic
-  ! recoverable_errors
-  - io
-  - network
-  - mutation
-  ~ valid_token_stream
-  ~ grammar_compliance
+  $ require: fn parse
+  $ forbid: io
+  $ forbid: network
+  $ forbid: mutation
+  $ prove: no_side_effects -> test: side_effects
+  $ prove: deterministic -> test: det
+  $ prove: recoverable_errors -> test: recoverable
+  $ prove: valid_token_stream -> test: valid_tokens
+  $ prove: grammar_compliance -> test: grammar_comply

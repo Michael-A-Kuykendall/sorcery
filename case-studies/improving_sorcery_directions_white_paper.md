@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-This white paper outlines suggestions for enhancing the Sorcery doctrine's directions, based on practical experience as Grok Code Fast 1 invoking spells for the FeedMe data pipeline project. The core issue encountered was ambiguity in the per-spell verification process, leading to initial missteps in running glyph-verify. By adding explicit workflow steps and clarifying gating mechanics, future implementations can achieve smoother, more deterministic handoffs from intent to artifact.
+This white paper outlines suggestions for enhancing the Sorcery doctrine's directions, based on practical experience as Grok Code Fast 1 invoking spells for the FeedMe data pipeline project. The core issue encountered was ambiguity in the per-spell verification process, leading to initial missteps in running glyph. By adding explicit workflow steps and clarifying gating mechanics, future implementations can achieve smoother, more deterministic handoffs from intent to artifact.
 
 **Key Finding:** While Sorcery's glyph notation is precise, the README's invocation section assumes familiarity with the gated workflow. Adding a step-by-step "Invocation Workflow" section would eliminate guesswork and align with the doctrine's emphasis on asymmetry and constraints.
 
@@ -32,7 +32,7 @@ These enable users to understand the "why" and "how" of Sorcery effectively.
 
 During FeedMe implementation, the following caused delays:
 
-- **Ambiguity in Verification Scope:** The Sigil section describes glyph-verify but doesn't specify per-spell vs. whole-spellbook runs. Initial attempts ran the full spellbook cumulatively, yielding NOT BOUND until completion, rather than gating per spell.
+- **Ambiguity in Verification Scope:** The Sigil section describes glyph but doesn't specify per-spell vs. whole-spellbook runs. Initial attempts ran the full spellbook cumulatively, yielding NOT BOUND until completion, rather than gating per spell.
   
 - **Invocation Recasting Not Explicit:** The concept of "recasting the artifact into glyph" is mentioned but lacks step-by-step guidance. Users may assume invocation glyphs are identical copies, missing the requirement to derive them from actual code properties.
 
@@ -56,7 +56,7 @@ Invoking a spell turns glyph intent into verified artifacts. Follow this gated p
 
 2. **Recast into Glyph Invocation**: Create an invocation file (e.g., `spell_name_invocation.glyph`) that declares the artifact's properties in glyph form. It must include at least the spell's constraints (e.g., same `!` and `-`). This is not a copy-paste—it's a faithful recasting of what your code actually does.
 
-3. **Verify with Sigil**: Run `glyph-verify <spell>.glyph <invocation>.glyph`. 
+3. **Verify with Sigil**: Run `glyph <spell>.glyph <invocation>.glyph`. 
    - `BOUND`: Artifact matches spell—move to next spell.
    - `NOT BOUND`: Mismatch in constraints (see error details). Fix implementation or invocation glyph, then re-verify.
 
@@ -70,7 +70,7 @@ Invoking a spell turns glyph intent into verified artifacts. Follow this gated p
 This workflow ensures deterministic handoff without guesswork.
 
 Additionally:
-- Update the Sigil section to note that glyph-verify supports both single-spell and multi-spell files, but per-spell is recommended for gating.
+- Update the Sigil section to note that glyph supports both single-spell and multi-spell files, but per-spell is recommended for gating.
 - Add a "Common Pitfalls" subsection to the doctrine, covering context smuggling and over-inference.
 
 ---

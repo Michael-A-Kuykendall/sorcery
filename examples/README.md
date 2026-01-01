@@ -31,7 +31,7 @@ example-name/
 
 **Method:** 
 - Read original source once
-- Extract intent into spells (guarantees, exclusions, assumptions, contracts)
+- Extract intent into spells (obligations, assumptions, contracts)
 - Close the original source
 - Generate new implementation from spells only
 - Compare behavioral fidelity
@@ -73,8 +73,8 @@ If you are reproducing these experiments or authoring new spells, use the curren
 
 ### What Spells Capture Well
 - Behavioral contracts (input → output)
-- Guarantees and invariants
-- Explicit exclusions
+- Obligations and invariants
+- Explicit forbids
 - Composition and dependencies
 - Recursive behavior
 
@@ -86,7 +86,7 @@ If you are reproducing these experiments or authoring new spells, use the curren
 - **Implicit language semantics** (Set.has uses ===)
 
 ### Doctrine Refinements Suggested
-1. Standard guarantees for wrapper preservation
+1. Standard obligations for wrapper preservation
 2. A pattern for library variants
 3. Acknowledgment that spells assume language knowledge
 
@@ -114,7 +114,7 @@ When adding a new example:
 4. Rehydrate without looking at original
 5. Document what survived and what diverged
 
-The goal is **not** to produce identical code. The goal is to produce **functionally equivalent** code that honors all contracts and exclusions.
+The goal is **not** to produce identical code. The goal is to produce **functionally equivalent** code that honors all contracts and forbids.
 
 ---
 

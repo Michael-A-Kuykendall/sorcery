@@ -2,10 +2,10 @@
   <img src="assets/sorcery-logo.png" alt="Sorcery" width="350">
 </p>
 
-<h3 align="center">Compress intent into spells.<br>Let lesser minds invoke them flawlessly.</h3>
+<h3 align="center">Compress intent into test-bound spells.<br>Enforce correctness with executable evidence.</h3>
 
 <p align="center">
-  <em>A notation for transmitting architectural wisdom across the context gap.</em>
+  <em>A notation for transmitting architectural wisdom with perfect gates.</em>
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 
 ---
 
-> **Note:** Sorcery is a *design doctrine* for architecture handoff—not a framework, language, or product. It encodes intent so it survives transmission. It is not code stenography or a byte-for-byte recorder; implementation details may differ while contracts and constraints are preserved.
+> **Note:** Sorcery is a *design doctrine* for enforceable architecture handoff—not a framework, language, or product. It binds intent to tests so it survives transmission with evidence. Spells are complete only with executable tests; semantic inference is deprecated.
 
 ---
 
@@ -41,12 +41,12 @@ Then you hand it off—and watch it dissolve:
 
 ## ✦ The Solution
 
-**Sorcery** is a notation for binding intent into transmissible form.
+**Sorcery** is a notation for binding intent into enforceable, transmissible form.
 
-- **Cast:** Compress high-context reasoning into a spell—terse, complete, unambiguous
-- **Invoke:** Let agents expand the spell into code, tests, or docs without guessing
+- **Cast:** Compress high-context reasoning into a test-bound spell—terse, complete, with executable obligations
+- **Invoke:** Expand the spell into code + tests, verified by runtime evidence
 
-Think of it as enchanting your architecture so it can be wielded by anyone.
+Think of it as enchanting your architecture with perfect gates so it can be wielded flawlessly.
 
 **The core idea:** *Sorcery casts high-context intent into constrained spells so lower-context agents can act correctly without shared memory.*
 
@@ -69,10 +69,11 @@ Here is a spell that binds a tokenizer's contract:
 
 @Tokenizer
   : utf8 -> tokens
-  ! deterministic
-  ! locale_free
-  - network
-  - persistence
+  $ require: fn tokenize
+  $ forbid: network
+  $ forbid: persistence
+  $ prove: deterministic -> test: det
+  $ prove: locale_free -> test: locale
   ~ valid_utf8
 ```
 
@@ -96,18 +97,17 @@ Sorcery enforces a clean separation between those who encode intent and those wh
 
 ### Spells: Atomic Units of Intent
 
-A **Spell** is one focused capability, bound tight:
+A **Spell** is one focused capability, bound tight with test evidence:
 
 - **Intent** — The "why" that survives all tradeoffs
-- **Guarantees** — What must *always* hold
+- **Obligations** — Require (existence), Forbid (prohibition), Prove (test-evidence)
 - **Assumptions** — What the spell relies upon
-- **Exclusions** — What is *forbidden* (often the most important part)
 
-Every spell does **exactly one thing**. No bloat, no ambiguity.
+Every spell does **exactly one thing**. Obligations ensure completeness; tests provide proof.
 
 ### Glyph: The Shorthand Language
 
-**Glyph** is Sorcery's symbolic notation—designed for machines, readable by humans:
+**Glyph** is Sorcery's symbolic notation—designed for human readability and test binding:
 
 | Symbol | Meaning | Example |
 |:------:|---------|---------|
@@ -115,15 +115,14 @@ Every spell does **exactly one thing**. No bloat, no ambiguity.
 | `^` | Intent (required!) | `^ produce stable tokens` |
 | `@` | Component/Entity | `@Tokenizer` |
 | `:` | Input → Output | `: utf8 -> tokens` |
-| `!` | Guarantee | `! deterministic` |
+| `$` | Obligation (require/forbid/prove) | `$ prove: deterministic -> test: det` |
 | `~` | Assumption | `~ valid_utf8` |
-| `-` | Exclusion | `- network` |
 | `>` | Dependency | `> @Tokenizer` |
 | `?` | Open question | `? performance reqs` |
 
 **Note on `?`:** Open questions block the entire casting process—resolve them *before* producing a sealed spellbook, not after.
 
-**Why symbols?** Prose is ambiguous. Glyphs enforce structure. Agents parse them cleanly.
+**Why symbols?** Prose is ambiguous. Glyphs enforce structure. Tests provide executable verification.
 
 ### Slice Gating: The Seal of Completion
 
@@ -131,8 +130,7 @@ A spell cannot be invoked until it is **sealed**:
 
 - ◆ Intent declared
 - ◆ No open questions (`?`) remain
-- ◆ Guarantees made explicit
-- ◆ At least one exclusion stated
+- ◆ Obligations complete (require/forbid/prove with tests)
 - ◆ Does exactly one thing
 
 **A malformed spell cannot be cast.** This is quality by constraint.
@@ -143,20 +141,17 @@ Spells may use Sorcery shorthand during planning, but shipped artifacts must not
 
 - Keep Sorcery words in planning docs only.
 - Production specs should exclude them (e.g. `- sorcery_terms_in_artifacts`).
-- Invocations must be neutral; `glyph-verify` rejects Sorcery jargon in invocation payloads.
+- Invocations must be neutral; tests enforce Sorcery obligations.
 
-### Sigil: Spell-by-Spell Verification
+### Test-Bound Verification
 
-`glyph-verify` compares a canonical spec against an invocation:
+Spells bind obligations to executable tests. Verification happens at runtime:
 
-- Single spell: pass files containing only that `#Spell:` block.
-- Whole spellbook: pass the full files.
+- `$ require:` obligations ensure functions/components exist
+- `$ forbid:` obligations prevent prohibited patterns (enforced by tests)
+- `$ prove:` obligations bind to specific test cases
 
-```
-glyph-verify ./specs/headless.spell ./invocations/headless.invocation.spell
-```
-
-`BOUND` means covered; `NOT BOUND` prints the first mismatch (with line numbers).
+**No separate verification tool needed** - tests provide complete enforcement.
 
 ---
 
@@ -170,18 +165,18 @@ glyph-verify ./specs/headless.spell ./invocations/headless.invocation.spell
 
 @Tokenizer
   : utf8 -> tokens
-  ! deterministic
-  ! locale_free
-  - network
-  - persistence
+  $ require: fn tokenize
+  $ forbid: network
+  $ forbid: persistence
+  $ prove: deterministic -> test: det
+  $ prove: locale_free -> test: locale
   ~ valid_utf8
 ```
 
 **What it binds:**
 - ◆ What it does (utf8 → tokens)
 - ◆ Why it exists (deterministic inference)
-- ◆ What must hold (deterministic, locale-free)
-- ◆ What it forbids (network, persistence)
+- ◆ What must hold (require/forbid/prove with tests)
 - ◆ What it assumes (valid utf8)
 
 ### Composed Spells: Building Systems
@@ -193,8 +188,9 @@ glyph-verify ./specs/headless.spell ./invocations/headless.invocation.spell
 @Parser
   : tokens -> ast
   > @Tokenizer  # depends on Tokenize spell
-  ! no_side_effects
-  - io
+  $ require: fn parse
+  $ forbid: io
+  $ prove: no_side_effects -> test: side_effects
   ~ valid_token_stream
 ```
 
@@ -210,20 +206,23 @@ Spells compose through **explicit contracts**—no hidden dependencies, no impli
 
 @InferenceEndpoint
   : request -> response
-  ! version_tagged
-  ! backward_compatible
-  - streaming
+  $ require: fn endpoint
+  $ forbid: streaming
+  $ prove: version_tagged -> test: version
+  $ prove: backward_compatible -> test: backward
   ~ authenticated_caller
 
 @RequestSchema
   : json -> validated_input
-  ! schema_versioned
-  - unknown_fields
+  $ require: fn validate_request
+  $ forbid: unknown_fields
+  $ prove: schema_versioned -> test: schema_version
 
 @ResponseSchema
   : inference_result -> json
-  ! deterministic_serialization
-  - stack_traces
+  $ require: fn serialize_response
+  $ forbid: stack_traces
+  $ prove: deterministic_serialization -> test: det_serialization
 ```
 
 **See the full examples in** [`examples/`](examples/)
@@ -244,7 +243,7 @@ If you are reproducing results or writing new spells, use the current doctrine; 
 
 **What you forbid is as important as what you allow.**
 
-Exclusions are first-class. A spell without them is probably incomplete.
+Forbids are first-class. A spell without them is probably incomplete.
 
 ### Boundary with Testing
 
@@ -289,55 +288,53 @@ English doesn't add new grammar to express new ideas. It combines existing gramm
 
 | Concept | Symbol | Example |
 |---------|--------|---------|
-| Wrapper preserves function name | `!` | `! preserves_function_name` |
-| Wrapper preserves arity | `!` | `! preserves_function_length` |
+| Function/component must exist | `$ require:` | `$ require: fn tokenize` |
+| Behavior must be forbidden | `$ forbid:` | `$ forbid: network` |
+| Behavior must be proven with test | `$ prove:` | `$ prove: deterministic -> test: det` |
 | Optional enhancement | `@` | Separate `@Extension` component |
-| Feature explicitly excluded | `-` | `- auto_installed` |
 | Library variant | `>` | `@ES6Equal > @Equal` |
-| Regex allows decimals | `!` | `! allows_decimal_values` |
-| Relies on language semantics | `~` | `~ set_uses_reference_equality` |
-| Runtime behavior assumed | `~` | `~ objects_are_plain` |
+| Runtime assumption | `~` | `~ valid_utf8` |
 
 ### ◆ Incantation Patterns
 
 **Preserving identity through wrappers:**
 ```glyph
 @Wrapper
-  ! preserves_function_name
-  ! preserves_function_length
-  - exposes_internal_state
+  $ prove: preserves_function_name -> test: name_preserved
+  $ prove: preserves_function_length -> test: length_preserved
+  $ forbid: exposes_internal_state
 ```
 
 **Separating core from optional:**
 ```glyph
 @Core
   : fn -> wrapped_fn
-  ! executes_once
+  $ prove: executes_once -> test: once_execution
 
 @Extension
   > @Core
-  ! adds_prototype_method
-  - auto_installed
+  $ prove: adds_prototype_method -> test: prototype_added
+  $ forbid: auto_installed
 ```
 
 **Expressing variants:**
 ```glyph
 @Equal
   : (a, b) -> boolean
-  ! handles_objects
-  - handles_Map
+  $ prove: handles_objects -> test: object_handling
+  $ forbid: handles_Map
 
 @ES6Equal
   > @Equal
-  ! handles_Map
-  ! handles_Set
+  $ prove: handles_Map -> test: map_handling
+  $ prove: handles_Set -> test: set_handling
 ```
 
 **Declaring runtime assumptions:**
 ```glyph
 @SetCompare
   : (a, b) -> boolean
-  ~ set_has_uses_reference_equality
+  ~ set_uses_reference_equality
   ~ objects_not_deep_compared_inside_sets
 ```
 
@@ -347,8 +344,9 @@ When a concept seems inexpressible, ask:
 
 | Question | Symbol |
 |----------|--------|
-| Must this always hold? | `!` guarantee |
-| Must this never happen? | `-` exclusion |
+| Must this function/component exist? | `$ require:` |
+| Must this behavior be forbidden? | `$ forbid:` |
+| Must this behavior be proven with test? | `$ prove:` |
 | Do we rely on this being true? | `~` assumption |
 | Is this a distinct piece? | `@` component |
 | Does this extend something else? | `>` dependency |
@@ -373,7 +371,7 @@ The answer exists. The grammar is closed. The vocabulary is yours.
 
 1. **Choose a component** that keeps breaking or drifting
 2. **Name the intent** — the "why" that must survive all tradeoffs
-3. **Declare guarantees, assumptions, exclusions**
+3. **Declare obligations, assumptions**
 4. **Hand the spell to an agent** for invocation
 
 **Start with one spell.** See what survives.

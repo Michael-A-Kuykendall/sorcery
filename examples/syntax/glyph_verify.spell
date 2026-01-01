@@ -3,41 +3,43 @@
 
 @Parser
   : constraint_text -> ast
-  ! deterministic
-  ! stable_normalization
-  ! ignores_markdown_fenced_blocks
-  ! ignores_comment_lines
-  ! strips_inline_comments_after_whitespace_hash
-  ! supports_crlf_and_lf
-  ! rejects_unknown_leading_tokens_with_line_number
-  - semantic_inference
-  - network
-  - filesystem_writes
-  ~ grammar_is_#^@:!~->?
-  ~ open_question_is_only_leading_?
+  $ require: fn parse
+  $ forbid: semantic_inference
+  $ forbid: network
+  $ forbid: filesystem_writes
+  $ prove: deterministic -> test: det
+  $ prove: stable_normalization -> test: stable
+  $ prove: ignores_markdown_fenced_blocks -> test: ignores_fenced
+  $ prove: ignores_comment_lines -> test: ignores_comments
+  $ prove: strips_inline_comments_after_whitespace_hash -> test: strips_comments
+  $ prove: supports_crlf_and_lf -> test: supports_line_endings
+  $ prove: rejects_unknown_leading_tokens_with_line_number -> test: rejects_unknown
+  $ prove: grammar_is_#^@:!~->? -> test: grammar_check
+  $ prove: open_question_is_only_leading_? -> test: open_question_check
 
 @Comparator
   : (spec_ast, artifact_ast) -> verdict
-  ! fails_on_missing_intent
-  ! fails_on_missing_guarantees
-  ! fails_on_missing_exclusions
-  ! fails_on_missing_dependencies
-  ! emits_actionable_diff
-  ! diff_is_deterministically_ordered
-  ! errors_include_line_numbers_when_available
-  - guessing
-  - nondeterminism
-  ~ artifact_description_written_from_output
+  $ require: fn compare
+  $ forbid: guessing
+  $ forbid: nondeterminism
+  $ prove: fails_on_missing_intent -> test: intent_check
+  $ prove: fails_on_missing_obligations -> test: obligation_check
+  $ prove: fails_on_missing_dependencies -> test: dependency_check
+  $ prove: emits_actionable_diff -> test: diff_output
+  $ prove: diff_is_deterministically_ordered -> test: diff_ordered
+  $ prove: errors_include_line_numbers_when_available -> test: line_numbers
+  $ prove: artifact_description_written_from_output -> test: artifact_desc
 
 @CLI
   : (spec_path, artifact_path, flags) -> exit_code
-  ! exit_0_on_pass
-  ! exit_1_on_mismatch
-  ! exit_2_on_usage_or_parse_error
-  - network
-  - filesystem_writes
+  $ require: fn cli
+  $ forbid: network
+  $ forbid: filesystem_writes
+  $ prove: exit_0_on_pass -> test: exit_0
+  $ prove: exit_1_on_mismatch -> test: exit_1
+  $ prove: exit_2_on_usage_or_parse_error -> test: exit_2
 
 @Verdict
   : input -> pass_fail
-  ! binary
-  - partial_success
+  $ require: fn verdict
+  $ prove: binary -> test: binary_output

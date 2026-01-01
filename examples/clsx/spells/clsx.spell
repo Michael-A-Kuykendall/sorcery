@@ -4,27 +4,29 @@
 @Clsx
   : (...args) -> string
   > @ToVal
-  ! accepts_variadic_arguments
-  ! returns_space_separated_string
-  ! filters_falsy_values
-  ! strings_pass_through
-  ! numbers_pass_through
-  ! objects_include_truthy_keys
-  ! arrays_recurse_and_flatten
-  ! nested_arrays_supported
-  ! empty_input_returns_empty_string
-  - includes_falsy_keys_from_objects
-  - includes_null_or_undefined
-  - throws_on_invalid_input
-  - trims_output
-  ~ all_inputs_are_string_number_object_array_or_falsy
+  $ require: fn clsx
+  $ forbid: includes_falsy_keys_from_objects
+  $ forbid: includes_null_or_undefined
+  $ forbid: throws_on_invalid_input
+  $ forbid: trims_output
+  $ prove: accepts_variadic_arguments -> test: variadic
+  $ prove: returns_space_separated_string -> test: space_separated
+  $ prove: filters_falsy_values -> test: filters_falsy
+  $ prove: strings_pass_through -> test: strings_pass
+  $ prove: numbers_pass_through -> test: numbers_pass
+  $ prove: objects_include_truthy_keys -> test: objects_truthy
+  $ prove: arrays_recurse_and_flatten -> test: arrays_flatten
+  $ prove: nested_arrays_supported -> test: nested_arrays
+  $ prove: empty_input_returns_empty_string -> test: empty_input
+  $ prove: all_inputs_are_string_number_object_array_or_falsy -> test: valid_inputs
 
 @ToVal
   : (mixed) -> string
-  ! handles_string
-  ! handles_number
-  ! handles_array_recursively
-  ! handles_object_by_truthy_keys
-  ! returns_empty_for_falsy
-  - handles_functions
-  - handles_symbols
+  $ require: fn toVal
+  $ forbid: handles_functions
+  $ forbid: handles_symbols
+  $ prove: handles_string -> test: handles_string
+  $ prove: handles_number -> test: handles_number
+  $ prove: handles_array_recursively -> test: handles_array
+  $ prove: handles_object_by_truthy_keys -> test: handles_object
+  $ prove: returns_empty_for_falsy -> test: returns_empty_falsy

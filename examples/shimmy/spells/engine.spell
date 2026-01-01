@@ -62,8 +62,8 @@
     # returns LoadedModel trait object
     # errors: ModelNotFound, LoadFailed, OutOfMemory
 
-  ! implementors must be Send + Sync
-  ! async for non-blocking model loads
+  $ require: implementors must be Send + Sync -> test: send_sync
+  $ require: async for non-blocking model loads -> test: async_load
 
 # ─────────────────────────────────────────────────────────────
 # INCANTATION: Loaded Model Trait
@@ -83,8 +83,8 @@
     # if on_token is Some, streams each token via callback
     # returns full generated text
     
-  ! on_token callback enables streaming
-  ! must be thread-safe (Send + Sync)
+  $ require: on_token callback enables streaming -> test: on_token_stream
+  $ require: must be thread-safe (Send + Sync) -> test: thread_safe
 
 # ─────────────────────────────────────────────────────────────
 # TRAIT OBJECT DISPATCH

@@ -29,17 +29,47 @@ function isTypedArray(value: any): value is
 
 export default function equal(a: any, b: any): boolean {
 	if (a === b) return true;
-	// NaN === NaN
 	if (a !== a && b !== b) return true;
 
 	if (!isObject(a) || !isObject(b)) return false;
-	if (a === null || b === null) return false;
 	if (a.constructor !== b.constructor) return false;
+
+	// Functions are never equal
+	if (typeof a === 'function' || typeof b === 'function') return false;
 
 	if (isDate(a)) return a.getTime() === (b as Date).getTime();
 	if (isRegExp(a)) {
 		const rb = b as RegExp;
 		return a.source === rb.source && a.flags === rb.flags;
+	}
+
+	if (isTypedArray(a)) {
+		if (!isTypedArray(b)) return false;
+		if (a.constructor !== b.constructor) return false;
+		if (a.length !== b.length) return false;
+		for (let i = 0; i < a.length; i++) {
+			if (a[i] !== b[i]) return false;
+		}
+		return true;
+	}
+
+	if (a instanceof Map) {
+		const mb = b as Map<any, any>;
+		if (a.size !== mb.size) return false;
+		for (const [key, val] of a.entries()) {
+			if (!mb.has(key)) return false;
+			if (!equal(val, mb.get(key))) return false;
+		}
+		return true;
+	}
+
+	if (a instanceof Set) {
+		const sb = b as Set<any>;
+		if (a.size !== sb.size) return false;
+		for (const val of a.values()) {
+			if (!sb.has(val)) return false;
+		}
+		return true;
 	}
 
 	if (Array.isArray(a)) {
@@ -65,65 +95,5 @@ export default function equal(a: any, b: any): boolean {
 }
 
 export function es6Equal(a: any, b: any): boolean {
-	if (a === b) return true;
-	if (a !== a && b !== b) return true;
-
-	if (!isObject(a) || !isObject(b)) return false;
-	if (a.constructor !== b.constructor) return false;
-
-	if (isDate(a)) return a.getTime() === (b as Date).getTime();
-	if (isRegExp(a)) {
-		const rb = b as RegExp;
-		return a.source === rb.source && a.flags === rb.flags;
-	}
-
-	if (isTypedArray(a)) {
-		if (!isTypedArray(b)) return false;
-		if (a.constructor !== b.constructor) return false;
-		if (a.length !== b.length) return false;
-		for (let i = 0; i < a.length; i++) {
-			if (a[i] !== b[i]) return false;
-		}
-		return true;
-	}
-
-	if (a instanceof Map) {
-		const mb = b as Map<any, any>;
-		if (a.size !== mb.size) return false;
-		for (const [key, val] of a.entries()) {
-			if (!mb.has(key)) return false;
-			if (!es6Equal(val, mb.get(key))) return false;
-		}
-		return true;
-	}
-
-	if (a instanceof Set) {
-		const sb = b as Set<any>;
-		if (a.size !== sb.size) return false;
-		for (const val of a.values()) {
-			if (!sb.has(val)) return false;
-		}
-		return true;
-	}
-
-	if (Array.isArray(a)) {
-		if (!Array.isArray(b)) return false;
-		if (a.length !== b.length) return false;
-		for (let i = 0; i < a.length; i++) {
-			if (!es6Equal(a[i], b[i])) return false;
-		}
-		return true;
-	}
-
-	const aKeys = Object.keys(a);
-	const bKeys = Object.keys(b);
-	if (aKeys.length !== bKeys.length) return false;
-
-	for (let i = 0; i < aKeys.length; i++) {
-		const key = aKeys[i];
-		if (!(key in b)) return false;
-		if (!es6Equal(a[key], b[key])) return false;
-	}
-
-	return true;
+	return equal(a, b);
 }

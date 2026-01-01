@@ -38,7 +38,7 @@
 
   :from_cli(cpu_moe: bool, n_cpu_moe: ?usize) -> Self
     # converts CLI flags to config
-    ! cpu_moe and n_cpu_moe are mutually exclusive
+    $ prove: cpu_moe and n_cpu_moe are mutually exclusive -> test: cli_exclusive
 
 # ─────────────────────────────────────────────────────────────
 # INCANTATION: Llama Engine
@@ -103,8 +103,8 @@
     #      e. if on_token: callback with decoded token
     #   4. detokenize and return full text
     
-  ! Mutex ensures single inference at a time
-  ! on_token enables streaming token-by-token
+  $ require: Mutex ensures single inference at a time -> test: mutex_single
+  $ require: on_token enables streaming token-by-token -> test: on_token_stream
 
 # ─────────────────────────────────────────────────────────────
 # GPU BACKEND DETECTION

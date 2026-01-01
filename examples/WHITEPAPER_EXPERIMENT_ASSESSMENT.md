@@ -54,7 +54,7 @@ Success is **not** byte-for-byte reproduction. Sorcery explicitly disclaims code
 Success is:
 - Behavioral fidelity (same contracts honored)
 - Architectural accuracy (same boundaries, patterns, dependencies)
-- Constraint preservation (same guarantees and exclusions)
+- Constraint preservation (same obligations)
 
 ---
 

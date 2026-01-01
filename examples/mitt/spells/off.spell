@@ -4,12 +4,12 @@
 @Off
   : (type, handler?) -> void
   > @HandlerMap
-  ! removes_by_reference_equality
-  ! clears_all_if_handler_omitted
-  ! no_op_if_not_found
-  ! safe_on_missing_type
-  - throws_on_missing
-  - returns_success_boolean
-  - auto_removes_empty_lists
-  ~ handler_is_same_reference
-  ~ type_exists_in_map
+  $ require: removes_by_reference_equality -> test: ref_equality_remove
+  $ require: clears_all_if_handler_omitted -> test: clear_all_omit
+  $ require: no_op_if_not_found -> test: no_op_not_found
+  $ require: safe_on_missing_type -> test: safe_missing_type
+  $ forbid: throws_on_missing -> test: no_throw_missing
+  $ forbid: returns_success_boolean -> test: no_return_bool
+  $ forbid: auto_removes_empty_lists -> test: no_auto_remove
+  $ prove: handler_is_same_reference -> test: same_ref_handler
+  $ prove: type_exists_in_map -> test: type_in_map

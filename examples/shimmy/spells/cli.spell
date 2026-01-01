@@ -4,9 +4,9 @@
 # Shimmy: The 4.8MB OpenAI API Server
 # ════════════════════════════════════════════════════════════
 
-~ rust_semantics
-~ clap_derive_macros
-~ subcommand_pattern
+$ prove: rust_semantics -> test: rust_sem
+$ prove: clap_derive_macros -> test: clap_macros
+$ prove: subcommand_pattern -> test: subcommand
 
 # ─────────────────────────────────────────────────────────────
 # INCANTATION: Top-Level CLI Structure
@@ -27,7 +27,7 @@
   #cpu_moe -> bool                     # --cpu-moe: offload ALL MoE experts to CPU
   #n_cpu_moe -> ?usize                 # --n-cpu-moe N: offload first N layers (conflicts with cpu_moe)
   
-  ! conflicts_with(cpu_moe, n_cpu_moe)
+  $ require: conflicts_with(cpu_moe, n_cpu_moe) -> test: conflict_check
 
 # ─────────────────────────────────────────────────────────────
 # INCANTATION: Command Subcommands

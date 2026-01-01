@@ -4,10 +4,10 @@
 # Shimmy: The 4.8MB OpenAI API Server
 # ════════════════════════════════════════════════════════════
 
-~ rust_semantics
-~ axum_extractors
-~ serde_json
-~ websocket_streaming
+$ prove: rust_semantics -> test: rust_sem
+$ prove: axum_extractors -> test: axum_ext
+$ prove: serde_json -> test: serde
+$ prove: websocket_streaming -> test: ws_stream
 
 # ─────────────────────────────────────────────────────────────
 # INCANTATION: Generate Request
@@ -85,8 +85,8 @@
   #    - await loaded.generate(prompt, opts, None)
   #    - return JSON response
   
-  ! streaming uses Server-Sent Events (SSE)
-  ! non-streaming returns full response
+  $ require: streaming uses Server-Sent Events (SSE) -> test: sse_streaming
+  $ require: non-streaming returns full response -> test: full_response
 
 :list_models(State(state)) -> impl IntoResponse
   # collects all available models:
@@ -125,8 +125,8 @@
   # 4. send final JSON: { "done": true }
   # 5. close socket
   
-  ! real-time token streaming over WebSocket
-  ! each token sent as separate frame
+  $ require: real-time token streaming over WebSocket -> test: ws_streaming
+  $ require: each token sent as separate frame -> test: token_frames
 
 # ─────────────────────────────────────────────────────────────
 # ERROR HANDLING

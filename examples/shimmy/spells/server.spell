@@ -74,7 +74,7 @@
   #
   # handles OPTIONS preflight with 200 OK
   
-  ! allows all origins (development-friendly)
+  $ require: allows all origins (development-friendly) -> test: allow_origins
 
 # ─────────────────────────────────────────────────────────────
 # INCANTATION: Health Check Endpoint

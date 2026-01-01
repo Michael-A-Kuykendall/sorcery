@@ -4,28 +4,31 @@
 
 @Once
   : (fn) -> wrapped_fn
-  ! first_call_executes_original
-  ! subsequent_calls_return_cached_value
-  ! preserves_this_context
-  ! preserves_arguments_on_first_call
-  ! preserves_function_name
-  ! preserves_function_length
-  ! exposes_called_flag_on_wrapper
-  ! exposes_value_property_on_wrapper
-  ! called_flag_initially_false
-  - throws_on_subsequent_calls
-  - clears_cached_value
-  - resets_called_flag
-  ~ fn_is_callable
+  $ require: fn once
+  $ forbid: throws_on_subsequent_calls
+  $ forbid: clears_cached_value
+  $ forbid: resets_called_flag
+  $ prove: first_call_executes_original -> test: first_call_executes
+  $ prove: subsequent_calls_return_cached_value -> test: subsequent_cached
+  $ prove: preserves_this_context -> test: preserves_this
+  $ prove: preserves_arguments_on_first_call -> test: preserves_args
+  $ prove: preserves_function_name -> test: preserves_name
+  $ prove: preserves_function_length -> test: preserves_length
+  $ prove: exposes_called_flag_on_wrapper -> test: exposes_called
+  $ prove: exposes_value_property_on_wrapper -> test: exposes_value
+  $ prove: called_flag_initially_false -> test: called_initial_false
+  $ prove: fn_is_callable -> test: callable_fn
 
 @OnceStrict
   : (fn) -> wrapped_fn
   > @Once
-  ! throws_error_on_subsequent_calls
-  ! error_message_includes_function_name
-  ! uses_fn_name_or_fallback
-  ! exposes_onceError_property
-  - returns_cached_value_on_subsequent_calls
-  - silent_no_op
+  $ require: fn onceStrict
+  $ forbid: returns_cached_value_on_subsequent_calls
+  $ forbid: silent_no_op
+  $ prove: throws_error_on_subsequent_calls -> test: throws_subsequent
+  $ prove: error_message_includes_function_name -> test: error_includes_name
+  $ prove: uses_fn_name_or_fallback -> test: uses_name_fallback
+  $ prove: exposes_onceError_property -> test: exposes_onceError
+
 
 ```

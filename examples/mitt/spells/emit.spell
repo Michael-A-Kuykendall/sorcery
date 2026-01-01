@@ -5,15 +5,15 @@
   : (type, event?) -> void
   > @HandlerMap
   > @On
-  ! invokes_type_handlers_first
-  ! invokes_wildcard_handlers_second
-  ! handlers_receive_event_payload
-  ! wildcard_handlers_receive_type_and_payload
-  ! iterates_snapshot_of_handlers
-  ! no_op_if_no_handlers
-  - supports_manual_wildcard_emit
-  - async_dispatch
-  - returns_handler_results
-  - catches_handler_errors
-  ~ handlers_are_synchronous
-  ~ event_payload_is_optional
+  $ require: invokes_type_handlers_first -> test: type_first
+  $ require: invokes_wildcard_handlers_second -> test: wildcard_second
+  $ require: handlers_receive_event_payload -> test: payload_receive
+  $ require: wildcard_handlers_receive_type_and_payload -> test: wildcard_payload
+  $ require: iterates_snapshot_of_handlers -> test: snapshot_iterate
+  $ require: no_op_if_no_handlers -> test: no_op_no_handlers
+  $ forbid: supports_manual_wildcard_emit -> test: no_manual_wildcard
+  $ forbid: async_dispatch -> test: no_async
+  $ forbid: returns_handler_results -> test: no_return_results
+  $ forbid: catches_handler_errors -> test: no_catch_errors
+  $ prove: handlers_are_synchronous -> test: sync_handlers
+  $ prove: event_payload_is_optional -> test: optional_payload

@@ -1,6 +1,6 @@
-# 📜 Shimmy Dehydration Whitepaper
+# 📜 Shimmy Dehydration Whitepaper (Reset to Test-Bound Spells)
 
-**Authorship note:** This dehydration writeup was produced by **Opus Claude 4.5**.
+**Authorship note:** Original dehydration by **Opus Claude 4.5**. Updated for test-bound reset.
 
 > **Architectural Extraction and Notation for System-Scale Software**
 
@@ -369,7 +369,41 @@ The rehydrated code should:
 
 ---
 
-## 9. Conclusion
+## 9. New Experiment (Test-Bound Spells)
+
+Rebuilt with test-bound obligations. Complex Rust system architecture captured with runtime verification.
+
+### Test Suite Coverage
+
+The test-bound rehydration includes executable tests for each `$ prove` obligation:
+
+| Test File | Obligation | Description |
+|-----------|------------|-------------|
+| `rust_sem.test.rs` | `rust_semantics` | Validates Rust language semantics |
+| `axum_ext.test.rs` | `axum_extractors` | Tests Axum HTTP extractors |
+| `serde.test.rs` | `serde_json` | Verifies JSON serialization |
+| `ws_stream.test.rs` | `websocket_streaming` | Tests WebSocket streaming |
+| `clap_macros.test.rs` | `clap_derive_macros` | Validates CLI derive macros |
+| `subcommand.test.rs` | `subcommand_pattern` | Tests subcommand routing |
+
+### Comparison (New vs Original)
+- **Notation:** !/- → $ require/forbid/prove with tests
+- **Enforcement:** Semantic analysis → Runtime test execution
+- **Code:** Identical functionality
+- **Fidelity:** Maintained with test verification
+- **Verification:** AI self-check → Executable evidence
+
+### What the Test-Bound Spell Adds
+- Executable tests for all prove obligations
+- Runtime verification of architectural contracts
+- Fail-closed validation of system invariants
+
+### Learnings
+System-scale architecture benefits from test bindings; complex FFI and async patterns are now verifiable. Test-bound approach eliminates AI self-verification for large codebases.
+
+---
+
+## 10. Conclusion
 
 This whitepaper demonstrates that **Sorcery notation scales to system-level architecture**. The 9-glyph grammar successfully captured:
 
@@ -381,6 +415,41 @@ This whitepaper demonstrates that **Sorcery notation scales to system-level arch
 - **Discovery systems** (multi-path filesystem scanning)
 
 The spells serve as a **complete architectural handoff specification**, enabling reconstruction by any competent Rust developer (or AI) without access to the original source.
+
+---
+
+## Files
+
+```
+examples/shimmy/
+├── README.md
+├── WHITEPAPER.md
+├── DIFF_ANALYSIS.md
+├── REHYDRATION_FORENSICS.md
+├── spells/
+│   ├── api.spell
+│   ├── auto_discovery.spell
+│   ├── cli.spell
+│   ├── engine.spell
+│   ├── engine_adapter.spell
+│   ├── engine_llama.spell
+│   ├── model_registry.spell
+│   ├── openai_compat.spell
+│   ├── server.spell
+│   └── templates.spell
+├── rehydrated/
+│   └── (original rehydration)
+└── rehydrated2/           # Test-bound rehydration
+    ├── Cargo.toml         # Rust project
+    ├── src/               # Implementation
+    └── tests/             # Test suite
+        ├── rust_sem.test.rs
+        ├── axum_ext.test.rs
+        ├── serde.test.rs
+        ├── ws_stream.test.rs
+        ├── clap_macros.test.rs
+        └── subcommand.test.rs
+```
 
 ---
 

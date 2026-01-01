@@ -3,18 +3,19 @@
 
 @Dlv
   : (obj, path, default?) -> value | default
-  ! accepts_string_path_with_dots
-  ! accepts_array_path
-  ! splits_string_on_dots
-  ! returns_undefined_if_no_default_and_missing
-  ! returns_default_if_path_missing
-  ! returns_actual_value_if_found
-  ! handles_null_in_chain
-  ! handles_undefined_in_chain
-  ! short_circuits_on_nullish
-  - throws_on_missing
-  - throws_on_invalid_path
-  - deep_clones_result
-  - modifies_input
-  ~ obj_is_object_or_nullish
-  ~ path_is_string_or_array
+  $ require: fn dlv
+  $ forbid: throws_on_missing
+  $ forbid: throws_on_invalid_path
+  $ forbid: deep_clones_result
+  $ forbid: modifies_input
+  $ prove: accepts_string_path_with_dots -> test: string_path
+  $ prove: accepts_array_path -> test: array_path
+  $ prove: splits_string_on_dots -> test: splits_dots
+  $ prove: returns_undefined_if_no_default_and_missing -> test: undefined_missing
+  $ prove: returns_default_if_path_missing -> test: default_missing
+  $ prove: returns_actual_value_if_found -> test: actual_value
+  $ prove: handles_null_in_chain -> test: null_chain
+  $ prove: handles_undefined_in_chain -> test: undefined_chain
+  $ prove: short_circuits_on_nullish -> test: short_circuit
+  $ prove: obj_is_object_or_nullish -> test: obj_check
+  $ prove: path_is_string_or_array -> test: path_string_array

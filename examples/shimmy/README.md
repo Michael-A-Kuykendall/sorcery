@@ -84,10 +84,10 @@ This captures the **architectural essence** of a 5000+ line Rust project.
   :Metal
 ```
 
-### 4. **Invariants and Guarantees** (`!`)
+### 4. **Obligations** (`$`)
 ```
-! manual entries take priority over discovered
-! Mutex ensures single inference at a time
+$ require: manual entries take priority over discovered -> test: manual_priority
+$ require: Mutex ensures single inference at a time -> test: single_inference
 ```
 
 ### 5. **Assumptions** (`~`)

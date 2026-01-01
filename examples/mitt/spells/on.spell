@@ -4,13 +4,13 @@
 @On
   : (type, handler) -> void
   > @HandlerMap
-  ! idempotent_safe
-  ! appends_to_existing
-  ! creates_list_if_missing
-  ! allows_duplicate_handlers
-  ! wildcard_type_receives_all_events
-  - returns_unsubscribe_function
-  - deduplication
-  - max_listener_limit
-  ~ handler_is_callable
-  ~ type_is_string_or_symbol
+  $ require: idempotent_safe -> test: idempotent
+  $ require: appends_to_existing -> test: append_existing
+  $ require: creates_list_if_missing -> test: create_list_missing
+  $ require: allows_duplicate_handlers -> test: allow_duplicates
+  $ require: wildcard_type_receives_all_events -> test: wildcard_all
+  $ forbid: returns_unsubscribe_function -> test: no_unsubscribe
+  $ forbid: deduplication -> test: no_dedup
+  $ forbid: max_listener_limit -> test: no_max_limit
+  $ prove: handler_is_callable -> test: callable_handler
+  $ prove: type_is_string_or_symbol -> test: string_symbol

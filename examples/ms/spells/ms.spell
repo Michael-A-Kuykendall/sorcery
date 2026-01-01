@@ -5,66 +5,72 @@
   : (value, options?) -> number | string
   > @Parse
   > @Format
-  ! string_input_returns_number
-  ! number_input_returns_string
-  ! throws_on_invalid_type
-  - returns_null_on_invalid
-  - async
-  ~ value_is_string_or_number
+  $ require: fn ms
+  $ forbid: returns_null_on_invalid
+  $ forbid: async
+  $ prove: string_input_returns_number -> test: string_to_number
+  $ prove: number_input_returns_string -> test: number_to_string
+  $ prove: throws_on_invalid_type -> test: invalid_type
+  $ prove: value_is_string_or_number -> test: string_or_number
 
 @Parse
   : (str) -> number
-  ! regex_based_parsing
-  ! supports_years_yrs_yr_y
-  ! supports_months_month_mo
-  ! supports_weeks_week_w
-  ! supports_days_day_d
-  ! supports_hours_hrs_hr_h
-  ! supports_minutes_mins_min_m
-  ! supports_seconds_secs_sec_s
-  ! supports_milliseconds_msecs_msec_ms
-  ! case_insensitive
-  ! allows_decimal_values
-  ! allows_negative_values
-  ! allows_space_between_number_and_unit
-  ! no_unit_defaults_to_milliseconds
-  ! returns_NaN_for_unparseable
-  ! throws_on_empty_string
-  ! throws_on_string_over_100_chars
-  - supports_compound_expressions
-  ~ str_matches_number_unit_pattern
+  $ require: fn parse
+  $ forbid: supports_compound_expressions
+  $ prove: regex_based_parsing -> test: regex_parsing
+  $ prove: supports_years_yrs_yr_y -> test: years_support
+  $ prove: supports_months_month_mo -> test: months_support
+  $ prove: supports_weeks_week_w -> test: weeks_support
+  $ prove: supports_days_day_d -> test: days_support
+  $ prove: supports_hours_hrs_hr_h -> test: hours_support
+  $ prove: supports_minutes_mins_min_m -> test: minutes_support
+  $ prove: supports_seconds_secs_sec_s -> test: seconds_support
+  $ prove: supports_milliseconds_msecs_msec_ms -> test: milliseconds_support
+  $ prove: case_insensitive -> test: case_insensitive
+  $ prove: allows_decimal_values -> test: decimal_values
+  $ prove: allows_negative_values -> test: negative_values
+  $ prove: allows_space_between_number_and_unit -> test: space_allowed
+  $ prove: no_unit_defaults_to_milliseconds -> test: no_unit_ms
+  $ prove: returns_NaN_for_unparseable -> test: nan_unparseable
+  $ prove: throws_on_empty_string -> test: empty_string_throw
+  $ prove: throws_on_string_over_100_chars -> test: long_string_throw
+  $ prove: str_matches_number_unit_pattern -> test: number_unit_pattern
 
 @Format
   : (ms, options?) -> string
   > @FmtShort
   > @FmtLong
-  ! options_long_selects_verbose_format
-  ! default_is_short_format
-  ! throws_on_non_finite_number
-  ~ ms_is_finite_number
+  $ require: fn format
+  $ prove: options_long_selects_verbose_format -> test: long_option
+  $ prove: default_is_short_format -> test: default_short
+  $ prove: throws_on_non_finite_number -> test: non_finite_throw
+  $ prove: ms_is_finite_number -> test: finite_number
 
 @FmtShort
   : (ms) -> string
-  ! returns_largest_fitting_unit
-  ! rounds_to_integer
-  ! uses_abbreviated_units
-  ! unit_hierarchy_y_mo_w_d_h_m_s_ms
-  ! uses_absolute_value_for_comparison
+  $ require: fn fmtShort
+  $ prove: returns_largest_fitting_unit -> test: largest_unit
+  $ prove: rounds_to_integer -> test: rounds_integer
+  $ prove: uses_abbreviated_units -> test: abbreviated_units
+  $ prove: unit_hierarchy_y_mo_w_d_h_m_s_ms -> test: unit_hierarchy
+  $ prove: uses_absolute_value_for_comparison -> test: absolute_value
 
 @FmtLong
   : (ms) -> string
-  ! returns_largest_fitting_unit
-  ! rounds_to_integer
-  ! uses_full_unit_names
-  ! pluralizes_when_value_gte_1_5
-  ! unit_hierarchy_y_mo_w_d_h_m_s_ms
+  $ require: fn fmtLong
+  $ prove: returns_largest_fitting_unit -> test: largest_unit_long
+  $ prove: rounds_to_integer -> test: rounds_integer_long
+  $ prove: uses_full_unit_names -> test: full_unit_names
+  $ prove: pluralizes_when_value_gte_1_5 -> test: pluralizes
+  $ prove: unit_hierarchy_y_mo_w_d_h_m_s_ms -> test: unit_hierarchy_long
 
 @TimeConstants
   : unit multipliers
-  ! second_1000
-  ! minute_60_seconds
-  ! hour_60_minutes
-  ! day_24_hours
-  ! week_7_days
-  ! year_365_25_days
-  ! month_year_div_12
+  $ require: const timeConstants
+  $ prove: second_1000 -> test: second_1000
+  $ prove: minute_60_seconds -> test: minute_60
+  $ prove: hour_60_minutes -> test: hour_60
+  $ prove: day_24_hours -> test: day_24
+  $ prove: week_7_days -> test: week_7
+  $ prove: year_365_25_days -> test: year_365_25
+  $ prove: month_year_div_12 -> test: month_year_div

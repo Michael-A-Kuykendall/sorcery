@@ -6,7 +6,7 @@ These are standalone spell examples demonstrating Glyph notation. They are not p
 
 | Spell | Demonstrates |
 |-------|--------------|
-| `tokenize.spell` | Basic spell with guarantees and exclusions |
+| `tokenize.spell` | Basic spell with obligations |
 | `parse.spell` | Composition via dependencies (`>`) |
 | `inference_abi.spell` | Multi-entity spell with multiple components |
 

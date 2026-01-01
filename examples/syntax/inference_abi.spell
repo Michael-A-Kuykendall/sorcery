@@ -3,26 +3,29 @@
 
 @InferenceEndpoint
   : request -> response
-  ! version_tagged
-  ! backward_compatible
-  ! timeout_bounded
-  - streaming
-  - internal_state_exposure
-  - implicit_defaults
-  ~ authenticated_caller
-  ~ valid_schema
+  $ require: fn endpoint
+  $ forbid: streaming
+  $ forbid: internal_state_exposure
+  $ forbid: implicit_defaults
+  $ prove: version_tagged -> test: version
+  $ prove: backward_compatible -> test: backward
+  $ prove: timeout_bounded -> test: timeout
+  $ prove: authenticated_caller -> test: auth
+  $ prove: valid_schema -> test: valid
 
 @RequestSchema
   : json -> validated_input
-  ! schema_versioned
-  ! strict_validation
-  - unknown_fields
-  ~ utf8_encoded
+  $ require: fn validate_request
+  $ forbid: unknown_fields
+  $ prove: schema_versioned -> test: schema_version
+  $ prove: strict_validation -> test: strict_validation
+  $ prove: utf8_encoded -> test: utf8
 
 @ResponseSchema
   : inference_result -> json
-  ! deterministic_serialization
-  ! error_codes_enumerated
-  - stack_traces
-  - internal_ids
-  ~ successful_inference
+  $ require: fn serialize_response
+  $ forbid: stack_traces
+  $ forbid: internal_ids
+  $ prove: deterministic_serialization -> test: det_serialization
+  $ prove: error_codes_enumerated -> test: error_codes
+  $ prove: successful_inference -> test: success
